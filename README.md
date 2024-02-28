@@ -7,15 +7,15 @@ Autori
 ------
 
 Nazev tymu
-- xlogin01 jmeno prijmeni 
-- xlogin02 jmeno prijmeni 
-- xlogin03 jmeno prijmeni 
-- xlogin04 jmeno prijmeni 
+- xnavram00 Martin Navrátil
+- xgajdo33 Richard Gajdošík
+- xcernim00 Matěj Černický
+- xcapkar00 Karel Josef Čáp
 
 Licence
 -------
 
-Tento program je poskytovan...
+Tento program je poskytovan pod licencí GNU General Public License v3.0
 
 Instalace
 ---------
@@ -36,3 +36,4 @@ sudo apt install libwebkit2gtk-4.0-dev \
     libayatana-appindicator3-dev \
     librsvg2-dev
 ```
+`cargo install tauri-cli`
