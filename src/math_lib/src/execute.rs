@@ -1,4 +1,6 @@
 use std::fmt;
+//use std::collections::LinkedList;
+use std::collections::VecDeque;
 
 /// [EvaluationError] indicates malformation in parse tree
 #[derive(Debug, Clone, PartialEq)]
@@ -13,6 +15,36 @@ impl fmt::Display for EvaluationError {
 /// In numerical edge cases such as division by zero `inf` or `NaN` will be returned for more information please visit [f64] documentation 
 pub fn evaluate_parse_tree(parse_tree: String)->Result<f64, EvaluationError>
 {
+    let mut tok_vec:VecDeque<String> = parse_tree.as_str().split_whitespace().collect::<Vec<_>>().iter().map(|s| s.to_string()).collect();
+    let mut iter = 0;
+    loop {
+        
+        match tok_vec.get(iter){
+            Some(s)=> match s.as_str(){
+                "+"=>{
+                    let a = tok_vec.get(iter-2).unwrap().parse::<f64>().unwrap();//Just for now
+                    let b = tok_vec.get(iter-1).unwrap().parse::<f64>().unwrap();
+                    tok_vec.pop_front();
+                    tok_vec.pop_front();
+                    tok_vec.pop_front();
+                    tok_vec.push_front(format!("{}", a+b));
+                    iter=0;
+                },
+                _=>{}
+            },
+            _=>{}
+        }
+        iter+=1;
+        if tok_vec.len() == 1{
+            return match tok_vec.get(0).unwrap_or(&"Error".to_string()).parse::<f64>() {
+                Ok(v)=>Ok(v),
+                Err(_e)=>Err(EvaluationError),
+            };
+        }
+        if iter>tok_vec.len() {
+            break;//Most likely stuck
+        }
+    }
     Err(EvaluationError)
 }
 
