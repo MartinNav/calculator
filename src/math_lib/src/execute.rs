@@ -15,24 +15,40 @@ impl fmt::Display for EvaluationError {
 /// In numerical edge cases such as division by zero `inf` or `NaN` will be returned for more information please visit [f64] documentation 
 pub fn evaluate_parse_tree(parse_tree: String)->Result<f64, EvaluationError>
 {
-    let mut tok_vec:VecDeque<String> = parse_tree.as_str().split_whitespace().collect::<Vec<_>>().iter().map(|s| s.to_string()).collect();
+    let mut tok_vec:Vec<String> = parse_tree.as_str().split_whitespace().collect::<Vec<_>>().iter().map(|s| s.to_string()).collect();
     let mut iter = 0;
     loop {
         
         match tok_vec.get(iter){
-            Some(s)=> match s.as_str(){
+            Some(s)=>{
+                let s = s.clone();
+                if "+-*/!".contains(&s) {
+                    let a = tok_vec.remove(iter-2).parse::<f64>().unwrap();//Just for now
+                    let b = tok_vec.remove(iter-2).parse::<f64>().unwrap();
+                match s.as_str(){
                 "+"=>{
-                    let a = tok_vec.get(iter-2).unwrap().parse::<f64>().unwrap();//Just for now
-                    let b = tok_vec.get(iter-1).unwrap().parse::<f64>().unwrap();
-                    tok_vec.pop_front();
-                    tok_vec.pop_front();
-                    tok_vec.pop_front();
-                    tok_vec.push_front(format!("{}", a+b));
-                    iter=0;
+                    tok_vec[iter-2] =format!("{}", a+b);
                 },
-                _=>{}
+                "-"=>{
+                    tok_vec[iter-2] =format!("{}", a-b);
+                },
+                "*"=>{
+                    tok_vec[iter-2] =format!("{}", a*b);
+                },
+                "/"=>{
+                    tok_vec[iter-2] =format!("{}", a/b);
+                },
+
+                _=>{
+                            todo!();
+                        }
+                }
+                iter=0;
+                }
             },
-            _=>{}
+            None=>{
+                return Err(EvaluationError);
+            }
         }
         iter+=1;
         if tok_vec.len() == 1{
@@ -68,10 +84,14 @@ mod tests{
     fn divide_two_values() {
         assert_eq!(evaluate_parse_tree("8 2 /".to_string()), Ok(4.0));
     }
+    #[test]
+    fn add_multiple_values() {
+        assert_eq!(evaluate_parse_tree("2 2 + 2 4 + +".to_string()), Ok(10.0));
+    }
 
     #[test]
     fn composed_equation_1() {
-        assert_eq!(evaluate_parse_tree("3 2 1 + *".to_string()), Ok(6.0));
+        assert_eq!(evaluate_parse_tree("3 2 1 + *".to_string()), Ok(9.0));
     }
 
     #[test]
