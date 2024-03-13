@@ -1,6 +1,4 @@
 use std::fmt;
-//use std::collections::LinkedList;
-use std::collections::VecDeque;
 
 /// [EvaluationError] indicates malformation in parse tree
 #[derive(Debug, Clone, PartialEq)]
@@ -26,7 +24,7 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
         match tok_vec.get(iter) {
             Some(s) => {
                 let s = s.clone();
-                if "+-*/!".contains(&s) && iter >= 2 && tok_vec.len() >= 2 {
+                if "+-*/R!^".contains(&s) && iter >= 2 && tok_vec.len() >= 2 {
                     let a;
                     let b;
                     match tok_vec.remove(iter - 2).parse::<f64>() {
@@ -49,7 +47,25 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
                         }
                         "/" => {
                             tok_vec[iter - 2] = format!("{}", a / b);
-                        }
+                        },
+                        "R" => {
+                            tok_vec[iter - 2] = format!("{}", a.powf(1./b));
+                        },
+                        "^" => {
+                            tok_vec[iter - 2] = format!("{}", a.powf(b));
+                        },
+                        "!" => {
+                            let mut n_fac:f64=1.0;
+                            let mut divisor:f64=1.0;
+                            for i in 1..=(a.round() as i64){
+                                n_fac*=i as f64;
+                            }
+                            for i in 1..(b.round() as i64){
+                                divisor*=i as f64;
+                            }
+                            tok_vec[iter - 2] = format!("{}", n_fac/divisor);
+                        },
+
 
                         _ => {
                             todo!();
@@ -98,6 +114,18 @@ mod tests {
     #[test]
     fn divide_two_values() {
         assert_eq!(evaluate_parse_tree("8 2 /".to_string()), Ok(4.0));
+    }
+    #[test]
+    fn power_of_two_values() {
+        assert_eq!(evaluate_parse_tree("2 5 ^".to_string()), Ok(32.0));
+    }
+    #[test]
+    fn sqrt_value() {
+        assert_eq!(evaluate_parse_tree("16 2 R".to_string()), Ok(4.0));
+    }
+    #[test]
+    fn factorial() {
+        assert_eq!(evaluate_parse_tree("3 1 !".to_string()), Ok(6.0));
     }
     #[test]
     fn add_multiple_values() {
