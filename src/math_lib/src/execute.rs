@@ -6,75 +6,82 @@ use std::collections::VecDeque;
 #[derive(Debug, Clone, PartialEq)]
 pub struct EvaluationError;
 impl fmt::Display for EvaluationError {
-    fn fmt(&self, f: &mut fmt::Formatter)->fmt::Result{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Error while evaluating parse tree occurred")
     }
 }
 /// This function is doing the actual math calculations on the parse tree
 /// When the parse tree is not valid or is malformed it will return [EvaluationError].
-/// In numerical edge cases such as division by zero `inf` or `NaN` will be returned for more information please visit [f64] documentation 
-pub fn evaluate_parse_tree(parse_tree: String)->Result<f64, EvaluationError>
-{
-    let mut tok_vec:Vec<String> = parse_tree.as_str().split_whitespace().collect::<Vec<_>>().iter().map(|s| s.to_string()).collect();
+/// In numerical edge cases such as division by zero `inf` or `NaN` will be returned for more information please visit [f64] documentation
+pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
+    let mut tok_vec: Vec<String> = parse_tree
+        .as_str()
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .iter()
+        .map(|s| s.to_string())
+        .collect();
     let mut iter = 0;
     loop {
-        
-        match tok_vec.get(iter){
-            Some(s)=>{
+        match tok_vec.get(iter) {
+            Some(s) => {
                 let s = s.clone();
-                if "+-*/!".contains(&s) && iter>=2 && tok_vec.len()>=2{
+                if "+-*/!".contains(&s) && iter >= 2 && tok_vec.len() >= 2 {
                     let a;
                     let b;
-                    match tok_vec.remove(iter-2).parse::<f64>(){
-                        Ok(res)=>a=res,
-                        Err(_)=>return Err(EvaluationError)
+                    match tok_vec.remove(iter - 2).parse::<f64>() {
+                        Ok(res) => a = res,
+                        Err(_) => return Err(EvaluationError),
                     }
-                    match tok_vec.remove(iter-2).parse::<f64>(){
-                        Ok(res)=>b=res,
-                        Err(_)=>return Err(EvaluationError)
+                    match tok_vec.remove(iter - 2).parse::<f64>() {
+                        Ok(res) => b = res,
+                        Err(_) => return Err(EvaluationError),
                     }
-                match s.as_str(){
-                "+"=>{
-                    tok_vec[iter-2] =format!("{}", a+b);
-                },
-                "-"=>{
-                    tok_vec[iter-2] =format!("{}", a-b);
-                },
-                "*"=>{
-                    tok_vec[iter-2] =format!("{}", a*b);
-                },
-                "/"=>{
-                    tok_vec[iter-2] =format!("{}", a/b);
-                },
+                    match s.as_str() {
+                        "+" => {
+                            tok_vec[iter - 2] = format!("{}", a + b);
+                        }
+                        "-" => {
+                            tok_vec[iter - 2] = format!("{}", a - b);
+                        }
+                        "*" => {
+                            tok_vec[iter - 2] = format!("{}", a * b);
+                        }
+                        "/" => {
+                            tok_vec[iter - 2] = format!("{}", a / b);
+                        }
 
-                _=>{
+                        _ => {
                             todo!();
                         }
+                    }
+                    iter = 0;
                 }
-                iter=0;
-                }
-            },
-            None=>{
+            }
+            None => {
                 return Err(EvaluationError);
             }
         }
-        iter+=1;
-        if tok_vec.len() == 1{
-            return match tok_vec.get(0).unwrap_or(&"Error".to_string()).parse::<f64>() {
-                Ok(v)=>Ok(v),
-                Err(_e)=>Err(EvaluationError),
+        iter += 1;
+        if tok_vec.len() == 1 {
+            return match tok_vec
+                .get(0)
+                .unwrap_or(&"Error".to_string())
+                .parse::<f64>()
+            {
+                Ok(v) => Ok(v),
+                Err(_e) => Err(EvaluationError),
             };
         }
-        if iter>tok_vec.len() {
-            break;//Most likely stuck
+        if iter > tok_vec.len() {
+            break; //Most likely stuck
         }
     }
     Err(EvaluationError)
 }
 
-
 #[cfg(test)]
-mod tests{
+mod tests {
     use super::*;
     #[test]
     fn add_two_values() {
@@ -107,17 +114,19 @@ mod tests{
         assert_eq!(evaluate_parse_tree("3 4 * 2 5 * +".to_string()), Ok(22.0));
     }
 
-
-
     //These are invalid operations
     #[test]
     fn invalid_multiple_ops() {
-        assert_eq!(evaluate_parse_tree("2 2 + * -".to_string()), Err(EvaluationError));
+        assert_eq!(
+            evaluate_parse_tree("2 2 + * -".to_string()),
+            Err(EvaluationError)
+        );
     }
     #[test]
     fn invalid_character() {
-        assert_eq!(evaluate_parse_tree("2 2 $".to_string()), Err(EvaluationError));
+        assert_eq!(
+            evaluate_parse_tree("2 2 $".to_string()),
+            Err(EvaluationError)
+        );
     }
-
 }
-
