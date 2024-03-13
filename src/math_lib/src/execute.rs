@@ -22,9 +22,17 @@ pub fn evaluate_parse_tree(parse_tree: String)->Result<f64, EvaluationError>
         match tok_vec.get(iter){
             Some(s)=>{
                 let s = s.clone();
-                if "+-*/!".contains(&s) {
-                    let a = tok_vec.remove(iter-2).parse::<f64>().unwrap();//Just for now
-                    let b = tok_vec.remove(iter-2).parse::<f64>().unwrap();
+                if "+-*/!".contains(&s) && iter>=2 && tok_vec.len()>=2{
+                    let a;
+                    let b;
+                    match tok_vec.remove(iter-2).parse::<f64>(){
+                        Ok(res)=>a=res,
+                        Err(_)=>return Err(EvaluationError)
+                    }
+                    match tok_vec.remove(iter-2).parse::<f64>(){
+                        Ok(res)=>b=res,
+                        Err(_)=>return Err(EvaluationError)
+                    }
                 match s.as_str(){
                 "+"=>{
                     tok_vec[iter-2] =format!("{}", a+b);
