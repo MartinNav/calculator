@@ -1,13 +1,15 @@
 use std::fmt;
 
-/// [EvaluationError] indicates malformation in parse tree
+/// Indicates malformation in parse tree
 #[derive(Debug, Clone, PartialEq)]
 pub struct EvaluationError;
+
 impl fmt::Display for EvaluationError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Error while evaluating parse tree occurred")
     }
 }
+
 /// This function is doing the actual math calculations on the parse tree
 /// When the parse tree is not valid or is malformed it will return [EvaluationError].
 /// In numerical edge cases such as division by zero `inf` or `NaN` will be returned for more information please visit [f64] documentation
@@ -22,6 +24,9 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
     let mut iter = 0;
     loop {
         match tok_vec.get(iter) {
+            None => {
+                return Err(EvaluationError);
+            }
             Some(s) => {
                 let s = s.clone();
                 if "+-*/R!^".contains(&s) && iter >= 2 && tok_vec.len() >= 2 {
@@ -47,25 +52,20 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
                         }
                         "/" => {
                             tok_vec[iter - 2] = format!("{}", a / b);
-                        },
+                        }
                         "R" => {
-                            tok_vec[iter - 2] = format!("{}", a.powf(1./b));
-                        },
+                            tok_vec[iter - 2] = format!("{}", a.powf(1. / b));
+                        }
                         "^" => {
                             tok_vec[iter - 2] = format!("{}", a.powf(b));
-                        },
+                        }
                         "!" => {
-                            let mut n_fac:f64=1.0;
-                            let mut divisor:f64=1.0;
-                            for i in 1..=(a.round() as i64){
-                                n_fac*=i as f64;
+                            let mut n_fac: f64 = 1.0;
+                            for i in (b.round() as i64)..=(a.round() as i64) {
+                                n_fac *= i as f64;
                             }
-                            for i in 1..(b.round() as i64){
-                                divisor*=i as f64;
-                            }
-                            tok_vec[iter - 2] = format!("{}", n_fac/divisor);
-                        },
-
+                            tok_vec[iter - 2] = format!("{}", n_fac);
+                        }
 
                         _ => {
                             todo!();
@@ -73,9 +73,6 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
                     }
                     iter = 0;
                 }
-            }
-            None => {
-                return Err(EvaluationError);
             }
         }
         iter += 1;
@@ -99,34 +96,42 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
     fn add_two_values() {
         assert_eq!(evaluate_parse_tree("2 2 +".to_string()), Ok(4.0));
     }
+
     #[test]
     fn subtract_two_values() {
         assert_eq!(evaluate_parse_tree("2 2 -".to_string()), Ok(0.0));
     }
+
     #[test]
     fn multiply_two_values() {
         assert_eq!(evaluate_parse_tree("2 4 *".to_string()), Ok(8.0));
     }
+
     #[test]
     fn divide_two_values() {
         assert_eq!(evaluate_parse_tree("8 2 /".to_string()), Ok(4.0));
     }
+
     #[test]
     fn power_of_two_values() {
         assert_eq!(evaluate_parse_tree("2 5 ^".to_string()), Ok(32.0));
     }
+
     #[test]
     fn sqrt_value() {
         assert_eq!(evaluate_parse_tree("16 2 R".to_string()), Ok(4.0));
     }
+
     #[test]
     fn factorial() {
         assert_eq!(evaluate_parse_tree("3 1 !".to_string()), Ok(6.0));
     }
+
     #[test]
     fn add_multiple_values() {
         assert_eq!(evaluate_parse_tree("2 2 + 2 4 + +".to_string()), Ok(10.0));
@@ -150,6 +155,7 @@ mod tests {
             Err(EvaluationError)
         );
     }
+
     #[test]
     fn invalid_character() {
         assert_eq!(
