@@ -32,7 +32,7 @@ impl fmt::Display for EvaluationError {
 
 /// This function is doing the actual math calculations on the parse tree
 /// When the parse tree is not valid or is malformed it will return [EvaluationError].
-/// In numerical edge cases such as division by zero `inf` or `NaN` will be returned for more information please visit [f64] documentation
+/// In numerical edge cases such as division by zero [EvaluationError] will also be returned.
 pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
     use crate::execute::Operator::{Add, Subtract, Multiply, Divide, Power, Root, Factorial};
     use crate::execute::Token::{Value, Operator};
@@ -93,7 +93,13 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
                             }
                             tokens[iter - 2] = Value(a / b);
                         }
-                        Root => { tokens[iter - 2] = Value(a.powf(1. / b)); }
+                        Root => {
+                            // for simplicity, we don't take odd roots of negative numbers into account
+                            if a < 0.0 {
+                                return Err(EvaluationError);
+                            }
+                            tokens[iter - 2] = Value(a.powf(1. / b));
+                        }
                         Power => { tokens[iter - 2] = Value(a.powf(b)); }
                         Factorial => {
                             let mut n_fac: f64 = 1.0;
@@ -110,7 +116,10 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
         if tokens.len() == 1 {
             return match tokens.get(0)
             {
-                Some(Value(v)) => Ok(*v),
+                Some(Value(v)) => {
+                    assert!(v.is_finite());
+                    Ok(*v)
+                },
                 _ => Err(EvaluationError)
             };
         }
@@ -190,6 +199,14 @@ mod tests {
     fn invalid_multiple_numbers() {
         assert_eq!(
             evaluate_parse_tree("3 2 2 +".to_string()),
+            Err(EvaluationError)
+        );
+    }
+
+    #[test]
+    fn invalid_root_of_negative() {
+        assert_eq!(
+            evaluate_parse_tree("-3 2 R".to_string()),
             Err(EvaluationError)
         );
     }
