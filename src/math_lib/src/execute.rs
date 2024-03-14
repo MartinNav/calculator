@@ -166,7 +166,31 @@ mod tests {
     }
 
     #[test]
-    fn invalid_character() {
+    fn invalid_multiple_numbers() {
+        assert_eq!(
+            evaluate_parse_tree("3 2 2 +".to_string()),
+            Err(EvaluationError)
+        );
+    }
+
+    #[test]
+    fn invalid_div_by_zero() {
+        assert_eq!(
+            evaluate_parse_tree("3 0 /".to_string()),
+            Err(EvaluationError)
+        );
+    }
+
+    #[test]
+    fn invalid_character_val() {
+        assert_eq!(
+            evaluate_parse_tree("2 $ +".to_string()),
+            Err(EvaluationError)
+        );
+    }
+
+    #[test]
+    fn invalid_character_op() {
         assert_eq!(
             evaluate_parse_tree("2 2 $".to_string()),
             Err(EvaluationError)
