@@ -1,5 +1,6 @@
 use std::fmt;
 
+/// This enum represents the operators that are used in the parse tree+
 #[derive(Debug, Clone, PartialEq)]
 enum Operator {
     Add,
@@ -11,6 +12,7 @@ enum Operator {
     Factorial,
 }
 
+/// This enum represents the tokens that are used in the parse tree
 #[derive(Debug, Clone, PartialEq)]
 enum Token
 {
@@ -31,7 +33,6 @@ impl fmt::Display for EvaluationError {
 /// This function is doing the actual math calculations on the parse tree
 /// When the parse tree is not valid or is malformed it will return [EvaluationError].
 /// In numerical edge cases such as division by zero `inf` or `NaN` will be returned for more information please visit [f64] documentation
-
 pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
     use crate::execute::Operator::{Add, Subtract, Multiply, Divide, Power, Root, Factorial};
     use crate::execute::Token::{Value, Operator};
@@ -175,7 +176,8 @@ mod tests {
         assert_eq!(evaluate_parse_tree("3 4 * 2 5 * +".to_string()), Ok(22.0));
     }
 
-    //These are invalid operations
+    // These are invalid operations
+
     #[test]
     fn invalid_multiple_ops() {
         assert_eq!(
