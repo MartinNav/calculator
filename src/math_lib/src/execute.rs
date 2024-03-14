@@ -31,19 +31,23 @@ impl fmt::Display for EvaluationError {
 /// This function is doing the actual math calculations on the parse tree
 /// When the parse tree is not valid or is malformed it will return [EvaluationError].
 /// In numerical edge cases such as division by zero `inf` or `NaN` will be returned for more information please visit [f64] documentation
+
 pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
+    use crate::execute::Operator::{Add, Subtract, Multiply, Divide, Power, Root, Factorial};
+    use crate::execute::Token::{Value, Operator};
+
     let mut tokens: Vec<Token> = parse_tree
         .as_str()
         .split_whitespace()
         .map(|s| match s {
-            "+" => Token::Operator(Operator::Add),
-            "-" => Token::Operator(Operator::Subtract),
-            "*" => Token::Operator(Operator::Multiply),
-            "/" => Token::Operator(Operator::Divide),
-            "R" => Token::Operator(Operator::Root),
-            "!" => Token::Operator(Operator::Factorial),
-            "^" => Token::Operator(Operator::Power),
-            _ => Token::Value(s.parse::<f64>().unwrap_or(0.0)),
+            "+" => Operator(Add),
+            "-" => Operator(Subtract),
+            "*" => Operator(Multiply),
+            "/" => Operator(Divide),
+            "R" => Operator(Root),
+            "!" => Operator(Factorial),
+            "^" => Operator(Power),
+            _ => Value(s.parse::<f64>().unwrap_or(0.0)),
         })
         .collect::<Vec<Token>>();
 
@@ -53,34 +57,34 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
             None => {
                 return Err(EvaluationError);
             }
-            Some(Token::Value(_)) => {}
-            Some(Token::Operator(op)) => {
+            Some(Value(_)) => {}
+            Some(Operator(op)) => {
                 let op = op.clone();
                 if iter >= 2 && tokens.len() >= 2 {
                     let a = match tokens.remove(iter - 2)
                     {
-                        Token::Value(v) => v,
+                        Value(v) => v,
                         _ => return Err(EvaluationError),
                     };
                     let b = match tokens.remove(iter - 2)
                     {
-                        Token::Value(v) => v,
+                        Value(v) => v,
                         _ => return Err(EvaluationError),
                     };
 
                     match op {
-                        Operator::Add => { tokens[iter - 2] = Token::Value(a + b); }
-                        Operator::Subtract => { tokens[iter - 2] = Token::Value(a - b); }
-                        Operator::Multiply => { tokens[iter - 2] = Token::Value(a * b); }
-                        Operator::Divide => { tokens[iter - 2] = Token::Value(a / b); }
-                        Operator::Root => { tokens[iter - 2] = Token::Value(a.powf(1. / b)); }
-                        Operator::Power => { tokens[iter - 2] = Token::Value(a.powf(b)); }
-                        Operator::Factorial => {
+                        Add => { tokens[iter - 2] = Value(a + b); }
+                        Subtract => { tokens[iter - 2] = Value(a - b); }
+                        Multiply => { tokens[iter - 2] = Value(a * b); }
+                        Divide => { tokens[iter - 2] = Value(a / b); }
+                        Root => { tokens[iter - 2] = Value(a.powf(1. / b)); }
+                        Power => { tokens[iter - 2] = Value(a.powf(b)); }
+                        Factorial => {
                             let mut n_fac: f64 = 1.0;
                             for i in (b.round() as i64)..=(a.round() as i64) {
                                 n_fac *= i as f64;
                             }
-                            tokens[iter - 2] = Token::Value(n_fac);
+                            tokens[iter - 2] = Value(n_fac);
                         }
                     }
                     iter = 0;
@@ -90,7 +94,7 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
         if tokens.len() == 1 {
             return match tokens.get(0)
             {
-                Some(Token::Value(v)) => Ok(*v),
+                Some(Value(v)) => Ok(*v),
                 _ => Err(EvaluationError)
             };
         }
