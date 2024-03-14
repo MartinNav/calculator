@@ -1,5 +1,23 @@
 use std::fmt;
 
+#[derive(Debug, Clone, PartialEq)]
+enum Operator {
+    Add,
+    Subtract,
+    Multiply,
+    Divide,
+    Power,
+    Root,
+    Factorial,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+enum Token
+{
+    Value(f64),
+    Operator(Operator),
+}
+
 /// Indicates malformation in parse tree
 #[derive(Debug, Clone, PartialEq)]
 pub struct EvaluationError;
@@ -14,83 +32,74 @@ impl fmt::Display for EvaluationError {
 /// When the parse tree is not valid or is malformed it will return [EvaluationError].
 /// In numerical edge cases such as division by zero `inf` or `NaN` will be returned for more information please visit [f64] documentation
 pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
-    let mut tok_vec: Vec<String> = parse_tree
+    let mut tokens: Vec<Token> = parse_tree
         .as_str()
         .split_whitespace()
-        .collect::<Vec<_>>()
-        .iter()
-        .map(|s| s.to_string())
-        .collect();
+        .map(|s| match s {
+            "+" => Token::Operator(Operator::Add),
+            "-" => Token::Operator(Operator::Subtract),
+            "*" => Token::Operator(Operator::Multiply),
+            "/" => Token::Operator(Operator::Divide),
+            "R" => Token::Operator(Operator::Root),
+            "!" => Token::Operator(Operator::Factorial),
+            "^" => Token::Operator(Operator::Power),
+            _ => Token::Value(s.parse::<f64>().unwrap_or(0.0)),
+        })
+        .collect::<Vec<Token>>();
+
     let mut iter = 0;
     loop {
-        match tok_vec.get(iter) {
+        match tokens.get(iter) {
             None => {
                 return Err(EvaluationError);
             }
-            Some(s) => {
-                let s = s.clone();
-                if "+-*/R!^".contains(&s) && iter >= 2 && tok_vec.len() >= 2 {
-                    let a;
-                    let b;
-                    match tok_vec.remove(iter - 2).parse::<f64>() {
-                        Ok(res) => a = res,
-                        Err(_) => return Err(EvaluationError),
-                    }
-                    match tok_vec.remove(iter - 2).parse::<f64>() {
-                        Ok(res) => b = res,
-                        Err(_) => return Err(EvaluationError),
-                    }
-                    match s.as_str() {
-                        "+" => {
-                            tok_vec[iter - 2] = format!("{}", a + b);
-                        }
-                        "-" => {
-                            tok_vec[iter - 2] = format!("{}", a - b);
-                        }
-                        "*" => {
-                            tok_vec[iter - 2] = format!("{}", a * b);
-                        }
-                        "/" => {
-                            tok_vec[iter - 2] = format!("{}", a / b);
-                        }
-                        "R" => {
-                            tok_vec[iter - 2] = format!("{}", a.powf(1. / b));
-                        }
-                        "^" => {
-                            tok_vec[iter - 2] = format!("{}", a.powf(b));
-                        }
-                        "!" => {
+            Some(Token::Value(_)) => {}
+            Some(Token::Operator(op)) => {
+                let op = op.clone();
+                if iter >= 2 && tokens.len() >= 2 {
+                    let a = match tokens.remove(iter - 2)
+                    {
+                        Token::Value(v) => v,
+                        _ => return Err(EvaluationError),
+                    };
+                    let b = match tokens.remove(iter - 2)
+                    {
+                        Token::Value(v) => v,
+                        _ => return Err(EvaluationError),
+                    };
+
+                    match op {
+                        Operator::Add => { tokens[iter - 2] = Token::Value(a + b); }
+                        Operator::Subtract => { tokens[iter - 2] = Token::Value(a - b); }
+                        Operator::Multiply => { tokens[iter - 2] = Token::Value(a * b); }
+                        Operator::Divide => { tokens[iter - 2] = Token::Value(a / b); }
+                        Operator::Root => { tokens[iter - 2] = Token::Value(a.powf(1. / b)); }
+                        Operator::Power => { tokens[iter - 2] = Token::Value(a.powf(b)); }
+                        Operator::Factorial => {
                             let mut n_fac: f64 = 1.0;
                             for i in (b.round() as i64)..=(a.round() as i64) {
                                 n_fac *= i as f64;
                             }
-                            tok_vec[iter - 2] = format!("{}", n_fac);
-                        }
-
-                        _ => {
-                            todo!();
+                            tokens[iter - 2] = Token::Value(n_fac);
                         }
                     }
                     iter = 0;
                 }
             }
         }
-        iter += 1;
-        if tok_vec.len() == 1 {
-            return match tok_vec
-                .get(0)
-                .unwrap_or(&"Error".to_string())
-                .parse::<f64>()
+        if tokens.len() == 1 {
+            return match tokens.get(0)
             {
-                Ok(v) => Ok(v),
-                Err(_e) => Err(EvaluationError),
+                Some(Token::Value(v)) => Ok(*v),
+                _ => Err(EvaluationError)
             };
         }
-        if iter > tok_vec.len() {
-            break; //Most likely stuck
+
+        iter += 1;
+        if iter > tokens.len() {
+            return Err(EvaluationError);
         }
     }
-    Err(EvaluationError)
 }
 
 #[cfg(test)]
