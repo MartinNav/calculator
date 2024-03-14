@@ -36,20 +36,30 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
     use crate::execute::Operator::{Add, Subtract, Multiply, Divide, Power, Root, Factorial};
     use crate::execute::Token::{Value, Operator};
 
-    let mut tokens: Vec<Token> = parse_tree
+    // the worst part of the code
+    let tokens: Result<Vec<Token>, _> = parse_tree
         .as_str()
         .split_whitespace()
         .map(|s| match s {
-            "+" => Operator(Add),
-            "-" => Operator(Subtract),
-            "*" => Operator(Multiply),
-            "/" => Operator(Divide),
-            "R" => Operator(Root),
-            "!" => Operator(Factorial),
-            "^" => Operator(Power),
-            _ => Value(s.parse::<f64>().unwrap_or(0.0)),
+            "+" => Ok(Operator(Add)),
+            "-" => Ok(Operator(Subtract)),
+            "*" => Ok(Operator(Multiply)),
+            "/" => Ok(Operator(Divide)),
+            "R" => Ok(Operator(Root)),
+            "!" => Ok(Operator(Factorial)),
+            "^" => Ok(Operator(Power)),
+            _ => match s.parse::<f64>() {
+                Ok(v) => { if v.is_finite() { Ok(Value(v)) } else { Err(EvaluationError) } }
+                Err(_) => Err(EvaluationError)
+            },
         })
-        .collect::<Vec<Token>>();
+        .collect::<_>();
+
+    if tokens.is_err() {
+        return Err(EvaluationError);
+    }
+
+    let mut tokens = tokens.unwrap();
 
     let mut iter = 0;
     loop {
@@ -76,7 +86,12 @@ pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
                         Add => { tokens[iter - 2] = Value(a + b); }
                         Subtract => { tokens[iter - 2] = Value(a - b); }
                         Multiply => { tokens[iter - 2] = Value(a * b); }
-                        Divide => { tokens[iter - 2] = Value(a / b); }
+                        Divide => {
+                            if b == 0.0 {
+                                return Err(EvaluationError);
+                            }
+                            tokens[iter - 2] = Value(a / b);
+                        }
                         Root => { tokens[iter - 2] = Value(a.powf(1. / b)); }
                         Power => { tokens[iter - 2] = Value(a.powf(b)); }
                         Factorial => {
