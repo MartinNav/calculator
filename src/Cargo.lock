@@ -1995,6 +1995,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "profiling"
+version = "0.1.0"
+dependencies = [
+ "math_lib",
+]
+
+[[package]]
 name = "quick-xml"
 version = "0.31.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

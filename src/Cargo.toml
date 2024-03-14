@@ -1,3 +1,3 @@
 [workspace]
 resolver="2"
-members = ["calculator/src-tauri","math_lib"]
+members = ["calculator/src-tauri", "math_lib", "profiling"]
