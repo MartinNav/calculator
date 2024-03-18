@@ -1,5 +1,7 @@
 Stanovené termíny:
+- 20.3.2024 - Vytvořit Mockup UI
 - 27.3.2024 - Dokončení uživatelského rozhraní (UI)
+- 30.3.2024 - Dokončení testů pro matematickou knihovnu
 - 2.4.2024 - Dokončení backendu pro výpočet matematických operací
 - 21.4.2024 - Kompletní dokončení projektu včetně testování a revize
 - 22.4.2024 - Vytvoření a revize souborů hodnoceni.txt a skutecnost.txt
