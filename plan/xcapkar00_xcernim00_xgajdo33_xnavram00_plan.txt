@@ -1,0 +1,24 @@
+Stanovené termíny:
+- 27.3.2024 - Dokončení uživatelského rozhraní (UI)
+- 2.4.2024 - Dokončení backendu pro výpočet matematických operací
+- 21.4.2024 - Kompletní dokončení projektu včetně testování a revize
+- 22.4.2024 - Vytvoření a revize souborů hodnoceni.txt a skutecnost.txt
+- 23.4.2024 - Finální kontrola a příprava na odevzdání projektu
+
+Přidělení úkolů:
+- xcapkar00 - Návrh a implementace UI, pomoc s dokumentací, koordinace návrhů mockups, koordinace práce
+- xcernim00 - Testování, dokumentace, profiling, vývoj matematické knihovny v Rustu, výpomoc v případě nestíhání termínů
+- xgajdo33 (Vedoucí) - Koordinace práce, vývoj matematické knihovny v Rustu, přidělování tasků lidem, parser vstupu
+- xnavram00 - Vývoj matematické knihovny v Rustu, technická podpora, propojení parseru a rust knihovny
+
+Komunikační kanály a pravidla:
+- Vyměnili jsme si e-maily a telefonní čísla pro případ nutné komunikace
+- Jako hlavní komunikační kanál používáme Discord server pro uchovávání informací
+- Pro sledování úkolů a termínů používáme Trello, kde trackujeme, kdo pracuje na čem a udržujeme informace o deadlinech.
+  V případě zájmu jsme ochotni poskytnout přístup, jelikož jsou na nástěnce úkoly více rozděleny 
+  a v průběhu projektu počítáme s tím, že se mohou řešitelé jednotlivých úkolů dynamicky měnit. 
+
+Systém pro správu verzí a hosting:
+- Zvolený systém - Git a GitHub pro lepší práci s pull requesty a protože s tím už má jeden z týmu zkušenosti
+- Repo: https://github.com/MartinNav/calculator
+- Přístup pro vyučující/cvičící - Vyučující budou přidáni jako collaboratoři na GitHubu; učitelský e-mail: ivs.kontrola@gmail.com
