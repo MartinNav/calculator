@@ -1,46 +1,86 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="styles.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
-    <script type="module" src="/main.js" defer></script>
-    <style>
-      .logo.vanilla:hover {
-        filter: drop-shadow(0 0 2em #ffe21c);
-      }
-    </style>
-  </head>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator</title>
+<link rel="stylesheet" href="styles.css"> <!-- Link to the CSS file -->
+</head>
+<body>
 
-  <body>
-    <div class="container">
-      <h1>Welcome to Tauri!</h1>
-
-      <div class="row">
-        <a href="https://tauri.app" target="_blank">
-          <img src="/assets/tauri.svg" class="logo tauri" alt="Tauri logo" />
-        </a>
-        <a
-          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript"
-          target="_blank"
-        >
-          <img
-            src="/assets/javascript.svg"
-            class="logo vanilla"
-            alt="JavaScript logo"
-          />
-        </a>
-      </div>
-
-      <p>Click on the Tauri logo to learn more about the framework</p>
-
-      <form class="row" id="greet-form">
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
-
-      <p id="greet-msg"></p>
+<div class="panel">
+    <div class="toggle-button" id="dark-mode-toggle" onclick="toggleDarkMode()">
+        <span class="dot"></span>
     </div>
-  </body>
+</div>
+
+<div class="calculator">
+  <div class="display" id="display"></div>
+  <div class="operators">
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+    <div class="button" id="operator" onclick="appendNumber('0')">0</div>
+  </div>
+  <div class="buttons">
+    <div class="numbers">
+      <div class="button" onclick="appendNumber('7')">7</div>
+      <div class="button" onclick="appendNumber('8')">8</div>
+      <div class="button" onclick="appendNumber('9')">9</div>
+      <div class="button" onclick="appendNumber('4')">4</div>
+      <div class="button" onclick="appendNumber('5')">5</div>
+      <div class="button" onclick="appendNumber('6')">6</div>
+      <div class="button" onclick="appendNumber('1')">1</div>
+      <div class="button" onclick="appendNumber('2')">2</div>
+      <div class="button" onclick="appendNumber('3')">3</div>
+      <div class="button" onclick="appendNumber('0')">0</div>
+      <div class="button" onclick="appendNumber(',')">,</div>
+    </div>
+    <div class="admin-buttons">
+      <div class="button" id="admin-button" onclick="appendNumber('DEL')">DEL</div>
+      <div class="button" id="admin-button" onclick="appendNumber('AC')">AC</div>
+      <div class="button" id="admin-button" onclick="appendNumber('=')">=</div>
+    </div>
+  </div>
+</div>
+
+<script>
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+    }
+
+    // JavaScript functions to handle calculator operations
+    function appendNumber(number) {
+        document.getElementById('display').innerText += number;
+    }
+
+    function appendOperator(operator) {
+        let display = document.getElementById('display').innerText;
+        let lastChar = display[display.length - 1];
+        // Check if last character is an operator, if so, replace it with the new operator
+        if (lastChar === '+' || lastChar === '-' || lastChar === '*' || lastChar === '/') {
+            display = display.slice(0, display.length - 1);
+        }
+        document.getElementById('display').innerText = display + operator;
+    }
+
+    function clearDisplay() {
+        document.getElementById('display').innerText = '0';
+    }
+
+    function calculate() {
+        let result = eval(document.getElementById('display').innerText);
+        document.getElementById('display').innerText = result;
+    }
+</script>
+
+</body>
 </html>
