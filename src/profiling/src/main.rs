@@ -1,5 +1,3 @@
-mod tests;
-
 use std::io::{Read, stdin};
 use math_lib::evaluate_parse_tree;
 
