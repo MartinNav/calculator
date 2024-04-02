@@ -23,6 +23,8 @@ Instalace
 `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
 - tauri
 `cargo install create-tauri-app --locked`
+- profiling
+  `cargo install flamegraph`
 - knihovny
 ```bash
 sudo apt update
