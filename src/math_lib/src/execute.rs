@@ -30,6 +30,13 @@ impl fmt::Display for EvaluationError {
     }
 }
 
+impl From<EvaluationError> for std::io::Error {
+    fn from(_error: EvaluationError) -> std::io::Error {
+        std::io::Error::new(std::io::ErrorKind::InvalidData, "Error while evaluating parse tree occurred")
+    }
+}
+
+
 /// This function is doing the actual math calculations on the parse tree
 /// When the parse tree is not valid or is malformed it will return [EvaluationError].
 /// In numerical edge cases such as division by zero `inf` or `NaN` will be returned for more information please visit [f64] documentation

@@ -85,9 +85,8 @@ pub fn prepare_to_evaluate(input: String) -> String {
     expression
 }
 
-fn main() {
+fn main() -> Result<(), std::io::Error> {
     let mut input = String::new();
-    stdin().read_to_string(&mut input).unwrap();
-    println!("{}", evaluate_parse_tree(prepare_to_evaluate(input)).unwrap());
-    todo!("Use prepare_to_parse once parser is implemented");
+    stdin().read_to_string(&mut input)?;
+    Ok(println!("{}", evaluate_parse_tree(prepare_to_evaluate(input))?))
 }
