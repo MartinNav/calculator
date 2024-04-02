@@ -3,11 +3,12 @@
 
 body {
   font-family: Arial, sans-serif;
-  margin: 0; /* Remove default margin */
-  height: 100vh; /* Set body height to viewport height */
+  margin: 0;
+  height: 100vh;
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  justify-content: center;
+  align-items: center;
+  color: #FFFCF2;
 }
 
 .panel {
@@ -34,75 +35,67 @@ body {
   border-radius: 50%;
 }
 
-.calculator {
-  width: 250px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 20px 10px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+.calculator{
+  border: 1px solid black;
+  border-radius: 1em;
 }
 
 .display {
-  width: calc(100% - 22px); /* Adjusted width to accommodate padding and border */
-  height: 60px;
-  margin-bottom: 10px;
+  width: 100%;
+  height: 5em;
+  margin: auto;
   font-size: 20px;
   text-align: right;
-  padding: 5px 10px; /* Adjusted padding for all sides */
-  border: 1px solid #ccc;
-  border-radius: 25px;
+  border-radius: 0.4em;
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
 }
 
 .operators {
+  margin: auto;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  grid-gap: 5px;
-  margin-bottom: 5px;
-}
-
+  align-items: start;
+  width: 100%;
+  }
+  
 .numbers {
+  margin: auto;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-gap: 5px;
+  width: 100%;
+}
+
+.keypad{
+  background-color: #FFFCF2;
 }
 
 #operator{
-  width: 10px;
-  height: 10px;
-}
-
-#operator:nth-child(6n){
-  margin-right: -5px;
-  background-color: red;
+  width: 2em;
+  height: 2em;
+  background-color: #CCC5B9;
 }
 
 .button {
-  width: 30px;
-  height: 30px;
+  width: 3em;
+  height: 3em;
   border-radius: 50%;
-  padding: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  cursor: pointer;
-  border: 1px solid #ccc;
+  box-sizing: border-box;
+  background-color: #403D39;
 }
 
-#admin-button:nth-child(1n){
+.special{
+  background-color: #EB5E28;
+}
+
+.button:nth-child(4n) {
   margin-right: 0;
-  margin-bottom: 5px;
 }
 
 .dark-mode {
   /* Dark mode styles */
-  background-color: #333;
+  background-color: #CCC5B9;
   color: #fff;
-}
-
-.no-margin-right {
-  margin-right: 0; /* Remove right margin for these buttons */
 }

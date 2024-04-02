@@ -16,35 +16,37 @@
 
 <div class="calculator">
   <div class="display" id="display"></div>
-  <div class="operators">
-    <div class="button" id="operator" onclick="appendNumber('+')">+</div>
-    <div class="button" id="operator" onclick="appendNumber('-')">-</div>
-    <div class="button" id="operator" onclick="appendNumber('*')">*</div>
-    <div class="button" id="operator" onclick="appendNumber('/')">/</div>
-    <div class="button" id="operator" onclick="appendNumber('%')">%</div>
-    <div class="button no-margin-right" id="operator" onclick="appendNumber('e')">e</div>
-    <div class="button" id="operator" onclick="appendNumber('xⁿ')">xⁿ</div>
-    <div class="button" id="operator" onclick="appendNumber('ⁿ√x')">ⁿ√x</div>
-    <div class="button" id="operator" onclick="appendNumber('(')">(</div>
-    <div class="button" id="operator" onclick="appendNumber(')')">)</div>
-    <div class="button" id="operator" onclick="appendNumber('!')">!</div>
-    <div class="button no-margin-right" id="operator" onclick="appendNumber('π')">π</div>
-  </div>
-  <div class="numbers">
-    <div class="button" onclick="appendNumber('7')">7</div>
-    <div class="button" onclick="appendNumber('8')">8</div>
-    <div class="button" onclick="appendNumber('9')">9</div>
-    <div class="button no-margin-right" onclick="appendNumber('')">DEL</div>
-    <div class="button" onclick="appendNumber('4')">4</div>
-    <div class="button" onclick="appendNumber('5')">5</div>
-    <div class="button" onclick="appendNumber('6')">6</div>
-    <div class="button no-margin-right" onclick="appendNumber('')">AC</div>
-    <div class="button" onclick="appendNumber('1')">1</div>
-    <div class="button" onclick="appendNumber('2')">2</div>
-    <div class="button" onclick="appendNumber('3')">3</div>
-    <div class="button no-margin-right" onclick="appendNumber('=')">=</div>
-    <div class="button" onclick="appendNumber('0')">0</div>
-    <div class="button" onclick="appendNumber(',')">,</div>
+  <div class="keypad">
+    <div class="operators">
+        <div class="button" id="operator" onclick="appendNumber('+')">+</div>
+        <div class="button" id="operator" onclick="appendNumber('-')">-</div>
+        <div class="button" id="operator" onclick="appendNumber('*')">*</div>
+        <div class="button" id="operator" onclick="appendNumber('/')">/</div>
+        <div class="button" id="operator" onclick="appendNumber('%')">%</div>
+        <div class="button" id="operator" onclick="appendNumber('e')">e</div>
+        <div class="button" id="operator" onclick="appendNumber('xⁿ')">xⁿ</div>
+        <div class="button" id="operator" onclick="appendNumber('ⁿ√x')">ⁿ√x</div>
+        <div class="button" id="operator" onclick="appendNumber('(')">(</div>
+        <div class="button" id="operator" onclick="appendNumber(')')">)</div>
+        <div class="button" id="operator" onclick="appendNumber('!')">!</div>
+        <div class="button" id="operator" onclick="appendNumber('π')">π</div>
+    </div>
+    <div class="numbers">
+        <div class="button" onclick="appendNumber('7')">7</div>
+        <div class="button" onclick="appendNumber('8')">8</div>
+        <div class="button" onclick="appendNumber('9')">9</div>
+        <div class="button special" onclick="appendNumber('')">DEL</div>
+        <div class="button" onclick="appendNumber('4')">4</div>
+        <div class="button" onclick="appendNumber('5')">5</div>
+        <div class="button" onclick="appendNumber('6')">6</div>
+        <div class="button special" onclick="appendNumber('')">AC</div>
+        <div class="button" onclick="appendNumber('1')">1</div>
+        <div class="button" onclick="appendNumber('2')">2</div>
+        <div class="button" onclick="appendNumber('3')">3</div>
+        <div class="button special" onclick="appendNumber('=')">=</div>
+        <div class="button" onclick="appendNumber('0')">0</div>
+        <div class="button" onclick="appendNumber(',')">,</div>
+    </div>
   </div>
 </div>
 
