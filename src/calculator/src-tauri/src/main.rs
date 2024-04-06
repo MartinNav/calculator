@@ -7,7 +7,10 @@ fn greet(name: &str) -> String {
 
 #[tauri::command]
 fn call_parser(input: String) -> String {
-    math_lib::parse(&input)
+    match math_lib::parse(&input) {
+        Ok(_) => "Parse successful".to_string(),
+        Err(e) => format!("Parse error: {}", e),
+    }
 }
 
 fn main() {
