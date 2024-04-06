@@ -3,8 +3,9 @@
 //          https://github.com/RichardGajdosik/VUTFIT_IFJ_2021_Projekt/blob/master/src/expressions.c
 
 //TODO: Better comments
-//TODO: Add support for '^' '√' '!'
 //TODO: Connect to FE and BE
+//TODO: Add support for negative numbers
+//TODO: Bug, "(1+2" sends it to oblivion
 
 // Operator enum representing possible operators in the expressions
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -13,9 +14,9 @@ enum Operator {
     Minus,      // Represents '-'
     Multiply,   // Represents '*'
     Divide,     // Represents '/'
-    //Power,      // Represents '^'
-    //Root,       // Represents '√'
-    //Factorial,  // Represents '!'
+    Power,      // Represents '^'
+    Root,       // Represents '√'
+    Factorial,  // Represents '!'
     OpenParen,  // Represents '('
     CloseParen, // Represents ')'
     EndOfInput, // Represents '$'
@@ -31,6 +32,9 @@ impl Operator {
             Operator::OpenParen => 4,
             Operator::CloseParen => 5,
             Operator::EndOfInput => 6,
+            Operator::Power => 8,
+            Operator::Root => 9,
+            Operator::Factorial => 10,
         }
     }
 }
@@ -105,15 +109,18 @@ fn process_current_number(current_number: &mut String, output_queue: &mut Vec<To
 fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
     // We define the precedence table as a 2D array
     let precedence_table: Vec<Vec<char>> = vec![
-           // *    /    +    -    (    )    $    i   
-        vec!['>', '>', '>', '>', '<', '>', '>', '<'], // *
-        vec!['>', '>', '>', '>', '<', '>', '>', '<'], // /
-        vec!['<', '<', '>', '>', '<', '>', '>', '<'], // +
-        vec!['<', '<', '>', '>', '<', '>', '>', '<'], // -
-        vec!['<', '<', '<', '<', '<', '=', 'c', '<'], // (
-        vec!['>', '>', '>', '>', 'c', '>', '>', 'c'], // )
-        vec!['<', '<', '<', '<', '<', 'c', 's', '<'], // $
-        vec!['>', '>', '>', '>', 'c', '>', '>', 'c'], // i
+           // *    /    +    -    (    )    $    i    ^    √    !
+        vec!['>', '>', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // *
+        vec!['>', '>', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // /
+        vec!['<', '<', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // +
+        vec!['<', '<', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // -
+        vec!['<', '<', '<', '<', '<', '=', 'c', '<', '<', '<', '<'], // (
+        vec!['>', '>', '>', '>', 'c', '>', '>', 'c', '>', '>', '>'], // )
+        vec!['<', '<', '<', '<', '<', 'c', 's', '<', '<', '<', '<'], // $
+        vec!['>', '>', '>', '>', 'c', '>', '>', 'c', '>', '>', '>'], // i
+        vec!['>', '>', '>', '>', '<', '>', '>', '<', '>', '>', '<'], // ^
+        vec!['>', '>', '>', '>', '<', '>', '>', '<', '>', '>', '<'], // √
+        vec!['>', '>', '>', '>', 'c', 'c', '>', '<', '>', '>', '>'], // !
     ];
 
     let mut Input_queue: Vec<Token> = Vec::new();
@@ -147,6 +154,18 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
             },
             ')' => {
                 let op = Operator::CloseParen;
+                Input_queue.push(Token::Operator(op, op.precedence_index()));
+            },
+            '^' => {
+                let op = Operator::Power;
+                Input_queue.push(Token::Operator(op, op.precedence_index()));
+            },
+            '√' => {
+                let op = Operator::Root;
+                Input_queue.push(Token::Operator(op, op.precedence_index()));
+            },
+            '!' => {
+                let op = Operator::Factorial;
                 Input_queue.push(Token::Operator(op, op.precedence_index()));
             },
             '0'..='9' | ',' | '.' => {
