@@ -4,7 +4,6 @@
 
 //TODO: Better comments
 //TODO: Add support for '^' '√' '!'
-//TODO: Go from english notation to czech notation in decimal numbers
 //TODO: Connect to FE and BE
 
 // Operator enum representing possible operators in the expressions
@@ -150,12 +149,14 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
                 let op = Operator::CloseParen;
                 Input_queue.push(Token::Operator(op, op.precedence_index()));
             },
-            '0'..='9' | '.' => {
+            '0'..='9' | ',' | '.' => {
+                // If the character is a comma, replace it with a decimal point
+                let character = if c == ',' { '.' } else { c };
                 // Accumulate digit and decimal point characters into current_number
-                current_number.push(c);
+                current_number.push(character);
                 // Check next character to decide if we should continue accumulating or process the number
                 if let Some(&next_char) = input_chars.peek() {
-                    if !next_char.is_digit(10) && next_char != '.' {
+                    if !next_char.is_digit(10) && next_char != ',' && next_char != '.' {
                         process_current_number(&mut current_number, &mut Input_queue)?;
                     }
                 } else {
