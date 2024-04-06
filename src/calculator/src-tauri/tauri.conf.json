@@ -19,10 +19,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "resizable": false,
+        "resizable": true,
         "title": "calculator",
-        "width": 600,
-        "height": 800
+        "width": 800,
+        "height": 750
       }
     ],
     "security": {
