@@ -2,6 +2,12 @@
 // Sources: https://www.fit.vutbr.cz/study/courses/IFJ/private/prednesy/Ifj08-en.pdf
 //          https://github.com/RichardGajdosik/VUTFIT_IFJ_2021_Projekt/blob/master/src/expressions.c
 
+//TODO: Better comments
+//TODO: Add support for '^' '√' '!'
+//TODO: Go from english notation to czech notation in decimal numbers
+//TODO: Connect to FE and BE
+//TODO: Go from postfix to expression tree
+
 // Operator enum representing possible operators in the expressions
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum Operator {
