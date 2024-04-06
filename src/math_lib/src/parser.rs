@@ -20,7 +20,6 @@ enum Operator {
     OpenParen,  // Represents '('
     CloseParen, // Represents ')'
     EndOfInput, // Represents '$'
-    //Identifier, // Represents 'i'
 }
 
 impl Operator {
@@ -33,7 +32,6 @@ impl Operator {
             Operator::OpenParen => 4,
             Operator::CloseParen => 5,
             Operator::EndOfInput => 6,
-            //Operator::Identifier => 7,
         }
     }
 }
