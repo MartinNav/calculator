@@ -4,79 +4,91 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculator</title>
-<link rel="stylesheet" href="styles.css"> <!-- Link to the CSS file -->
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<div class="panel">
-    <div class="toggle-button" id="dark-mode-toggle" onclick="toggleDarkMode()">
-        <span class="dot"></span>
-    </div>
-</div>
-
 <div class="calculator">
-  <div class="display" id="display"></div>
-  <div class="keypad">
-    <div class="operators">
-        <div class="button" id="operator" onclick="appendNumber('+')">+</div>
-        <div class="button" id="operator" onclick="appendNumber('-')">-</div>
-        <div class="button" id="operator" onclick="appendNumber('*')">*</div>
-        <div class="button" id="operator" onclick="appendNumber('/')">/</div>
-        <div class="button" id="operator" onclick="appendNumber('%')">%</div>
-        <div class="button" id="operator" onclick="appendNumber('e')">e</div>
-        <div class="button" id="operator" onclick="appendNumber('xⁿ')">xⁿ</div>
-        <div class="button" id="operator" onclick="appendNumber('ⁿ√x')">ⁿ√x</div>
-        <div class="button" id="operator" onclick="appendNumber('(')">(</div>
-        <div class="button" id="operator" onclick="appendNumber(')')">)</div>
-        <div class="button" id="operator" onclick="appendNumber('!')">!</div>
-        <div class="button" id="operator" onclick="appendNumber('π')">π</div>
+    <input type="text" class="display" id="display" disabled>
+    <div class="buttons">
+        <button class="operator" onclick="appendToDisplay('Math.pow(')">x<sup>y</sup></button>    
+        <button class="operator" onclick="nthRoot()">√<sub>n</sub></button>
+        <button class="operator" onclick="appendToDisplay('%')">%</button>
+        <button class="special" onclick="clearDisplay()">C</button>
+        <button class="special" onclick="removeLast()">←</button>
+
+        <button onclick="appendToDisplay('7')">7</button>
+        <button onclick="appendToDisplay('8')">8</button>
+        <button onclick="appendToDisplay('9')">9</button>
+        <button class="operator" onclick="appendToDisplay('Math.PI')">π</button>
+        <button class="operator" onclick="appendToDisplay('!')">!</button>     
+        
+        <button onclick="appendToDisplay('4')">4</button>
+        <button onclick="appendToDisplay('5')">5</button>
+        <button onclick="appendToDisplay('6')">6</button>
+        <button class="operator" onclick="appendToDisplay('+')">+</button>
+        <button class="operator" onclick="appendToDisplay('-')">-</button>
+
+        <button onclick="appendToDisplay('1')">1</button>
+        <button onclick="appendToDisplay('2')">2</button>
+        <button onclick="appendToDisplay('3')">3</button>
+        <button class="operator" onclick="appendToDisplay('*')">*</button>
+        <button class="operator" onclick="appendToDisplay('/')">/</button>        
+        
+        <button onclick="appendToDisplay('0')">0</button>
+        <button onclick="appendToDisplay(',')">,</button>
+        <button class="operator" onclick="appendToDisplay('(')">(</button>
+        <button class="operator" onclick="appendToDisplay(')')">)</button>
+        
+        <button class="equals" onclick="calculate()">=</button>
     </div>
-    <div class="numbers">
-        <div class="button" onclick="appendNumber('7')">7</div>
-        <div class="button" onclick="appendNumber('8')">8</div>
-        <div class="button" onclick="appendNumber('9')">9</div>
-        <div class="button special" onclick="appendNumber('')">DEL</div>
-        <div class="button" onclick="appendNumber('4')">4</div>
-        <div class="button" onclick="appendNumber('5')">5</div>
-        <div class="button" onclick="appendNumber('6')">6</div>
-        <div class="button special" onclick="appendNumber('')">AC</div>
-        <div class="button" onclick="appendNumber('1')">1</div>
-        <div class="button" onclick="appendNumber('2')">2</div>
-        <div class="button" onclick="appendNumber('3')">3</div>
-        <div class="button special" onclick="appendNumber('=')">=</div>
-        <div class="button" onclick="appendNumber('0')">0</div>
-        <div class="button" onclick="appendNumber(',')">,</div>
-    </div>
-  </div>
 </div>
 
 <script>
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-    }
-
-    // JavaScript functions to handle calculator operations
-    function appendNumber(number) {
-        document.getElementById('display').innerText += number;
-    }
-
-    function appendOperator(operator) {
-        let display = document.getElementById('display').innerText;
-        let lastChar = display[display.length - 1];
-        // Check if last character is an operator, if so, replace it with the new operator
-        if (lastChar === '+' || lastChar === '-' || lastChar === '*' || lastChar === '/') {
-            display = display.slice(0, display.length - 1);
-        }
-        document.getElementById('display').innerText = display + operator;
+    function appendToDisplay(value) {
+        var display = document.getElementById('display');
+        display.value += value;
+        adjustFontSize(display);
     }
 
     function clearDisplay() {
-        document.getElementById('display').innerText = '0';
+        var display = document.getElementById('display');
+        display.value = '';
+        adjustFontSize(display);
+    }
+
+    function removeLast() {
+        var display = document.getElementById('display');
+        var displayValue = display.value;
+        display.value = displayValue.substring(0, displayValue.length - 1);
+        adjustFontSize(display);
     }
 
     function calculate() {
-        let result = eval(document.getElementById('display').innerText);
-        document.getElementById('display').innerText = result;
+        try {
+            var result = eval(document.getElementById('display').value);
+            document.getElementById('display').value = result;
+        } catch (error) {
+            document.getElementById('display').value = 'Error';
+        }
+        adjustFontSize(document.getElementById('display'));
+    }
+
+    function nthRoot() {
+        var x = document.getElementById('display').value;
+        var n = prompt("Enter the degree of the root (n):");
+        if (n != null) {
+            appendToDisplay("^(1/" + n + ")");
+        }
+    }
+
+    function adjustFontSize(element) {
+        var fontSize = 28; // Initial font size
+        var maxLength = 15; // Maximum characters before shrinking font size
+        var displayLength = element.value.length;
+        if (displayLength > maxLength) {
+            fontSize = Math.max(18, 28 - (displayLength - maxLength)); // Minimum font size is 18px
+        }
+        element.style.fontSize = fontSize + 'px';
     }
 </script>
 

@@ -1,101 +1,55 @@
-/* style.css */
-/* https://coolors.co/palette/fffcf2-ccc5b9-403d39-252422-eb5e28*/
-
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
+  background-color: #FFFEF9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #FFFCF2;
+  margin: 0;
 }
-
-.panel {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+.calculator {
+  width: 400px;
+  border: 2px solid #E6E1D6;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 20px;
 }
-
-.toggle-button {
-  width: 30px;
-  height: 30px;
-  background-color: #ccc;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  background-color: #666;
-  border-radius: 50%;
-}
-
-.calculator{
-  border: 1px solid black;
-  border-radius: 1em;
-}
-
 .display {
-  width: 100%;
-  height: 5em;
-  margin: auto;
-  font-size: 20px;
-  text-align: right;
-  border-radius: 0.4em;
-  display: flex;
+  background-color: #E6E1D6;
+  width: calc(100% - 40px);
+  padding: 30px 20px;
+  margin-bottom: 15px;
+  border: 2px solid #E6E1D6;
+  border-radius: 10px;
+  font-size: 28px;
 }
-
-.operators {
-  margin: auto;
+.calculator .buttons {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  align-items: start;
-  width: 100%;
-  }
-  
-.numbers {
-  margin: auto;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  width: 100%;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 10px;
 }
-
-.keypad{
-  background-color: #FFFCF2;
+.calculator .buttons button {
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #E6E1D6;
+  color: #403D39;
+  font-size: 24px;
 }
-
-#operator{
-  width: 2em;
-  height: 2em;
-  background-color: #CCC5B9;
-}
-
-.button {
-  width: 3em;
-  height: 3em;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
+.calculator .buttons button.operator {
   background-color: #403D39;
+  color: #FFFEF9;
 }
-
-.special{
+.calculator .buttons button.special {
   background-color: #EB5E28;
+  color: #FFFEF9;
 }
-
-.button:nth-child(4n) {
-  margin-right: 0;
+.calculator .buttons button.equals {
+  background-color: #45a049;
+  color: #FFFEF9;
 }
-
-.dark-mode {
-  /* Dark mode styles */
-  background-color: #CCC5B9;
-  color: #fff;
+.calculator .buttons button:hover {
+  background-color: #929291;
+  color: #FFFEF9;
 }
