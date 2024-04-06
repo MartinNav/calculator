@@ -6,7 +6,6 @@
 //TODO: Add support for '^' '√' '!'
 //TODO: Go from english notation to czech notation in decimal numbers
 //TODO: Connect to FE and BE
-//TODO: Delete PrecedenceStart and PrecedenceEnd
 
 // Operator enum representing possible operators in the expressions
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -22,8 +21,6 @@ enum Operator {
     CloseParen, // Represents ')'
     EndOfInput, // Represents '$'
     //Identifier, // Represents 'i'
-    PrecedenceEnd, // Represents '>'
-    PrecedenceStart, // Represents '<'
 }
 
 impl Operator {
@@ -37,8 +34,6 @@ impl Operator {
             Operator::CloseParen => 5,
             Operator::EndOfInput => 6,
             //Operator::Identifier => 7,
-            Operator::PrecedenceStart => 41,
-            Operator::PrecedenceEnd => 42,
         }
     }
 }
@@ -216,7 +211,6 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
             '<' => {
                 // If input operator has lower precedence, push it onto the stack
                 println!("Pushing top of Input_queue to stack");
-                //stack.push(Token::Operator(Operator::PrecedenceStart, 41));
                 let token_to_push_to_stack = Input_queue.pop().unwrap();
                 stack.push(token_to_push_to_stack);
             },
