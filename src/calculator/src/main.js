@@ -8,6 +8,7 @@ async function calculate() {
   display.value = await invoke("calculate", { equation: display.value });
 
   console.log("calculate finished");
+ adjustFontSize(display);
 }
 
 window.addEventListener("DOMContentLoaded", () => {
