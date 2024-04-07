@@ -5,7 +5,7 @@
 //TODO: Better comments
 //TODO: Connect to FE and BE
 //TODO: Add support for negative numbers
-//TODO: Bug, "(1+2" sends it to oblivion
+//TODO: Bug, "(1+2" sends it to oblivion, todo: exit gracefully instead of exiting whole program
 
 // Operator enum representing possible operators in the expressions
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -251,9 +251,11 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
             'c' => {
                 // Error
                 println!("Conflict in precedence");
+                std::process::exit(1);
             },
             _ => {
                 println!("Unexpected precedence value");
+                std::process::exit(1);
             }
         }
     }
