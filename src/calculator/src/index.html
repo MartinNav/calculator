@@ -1,46 +1,83 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="styles.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
-    <script type="module" src="/main.js" defer></script>
-    <style>
-      .logo.vanilla:hover {
-        filter: drop-shadow(0 0 2em #ffe21c);
-      }
-    </style>
-  </head>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator</title>
+<link rel="stylesheet" href="styles.css">
+    <script type="module" src="main.js" defer>
+      
+    </script>
+</head>
+<body>
+<div class="calculator">
+    <input type="text" class="display" id="display" disabled>
+    <div class="buttons">
+        <button class="operator" onclick="appendToDisplay('^')">x<sup>y</sup></button>    
+        <button class="operator" onclick="appendToDisplay('√')">√<sub>n</sub></button>
+        <button class="operator" onclick="appendToDisplay('!')">!</button>
+        <button class="special" onclick="clearDisplay()">C</button>
+        <button class="special" onclick="removeLast()">←</button>
 
-  <body>
-    <div class="container">
-      <h1>Welcome to Tauri!</h1>
+        <button onclick="appendToDisplay('7')">7</button>
+        <button onclick="appendToDisplay('8')">8</button>
+        <button onclick="appendToDisplay('9')">9</button>
+        <button class="operator" onclick="appendToDisplay('π')">π</button>
+        <button class="operator" onclick="appendToDisplay('e')">e</button>
+        
+        <button onclick="appendToDisplay('4')">4</button>
+        <button onclick="appendToDisplay('5')">5</button>
+        <button onclick="appendToDisplay('6')">6</button>
+        <button class="operator" onclick="appendToDisplay('+')">+</button>
+        <button class="operator" onclick="appendToDisplay('-')">-</button>
 
-      <div class="row">
-        <a href="https://tauri.app" target="_blank">
-          <img src="/assets/tauri.svg" class="logo tauri" alt="Tauri logo" />
-        </a>
-        <a
-          href="https://developer.mozilla.org/en-US/docs/Web/JavaScript"
-          target="_blank"
-        >
-          <img
-            src="/assets/javascript.svg"
-            class="logo vanilla"
-            alt="JavaScript logo"
-          />
-        </a>
-      </div>
-
-      <p>Click on the Tauri logo to learn more about the framework</p>
-
-      <form class="row" id="greet-form">
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
-
-      <p id="greet-msg"></p>
+        <button onclick="appendToDisplay('1')">1</button>
+        <button onclick="appendToDisplay('2')">2</button>
+        <button onclick="appendToDisplay('3')">3</button>
+        <button class="operator" onclick="appendToDisplay('*')">*</button>
+        <button class="operator" onclick="appendToDisplay('/')">/</button>        
+        
+        <button onclick="appendToDisplay('0')">0</button>
+        <button onclick="appendToDisplay(',')">,</button>
+        <button class="operator" onclick="appendToDisplay('(')">(</button>
+        <button class="operator" onclick="appendToDisplay(')')">)</button>
+        
+        <button class="equals" id="equals" >=</button>
     </div>
-  </body>
+</div>
+
+<script>
+    function appendToDisplay(value) {
+      var display = document.getElementById('display');
+      if (display.value === "undefined") //|| display.value.contains("error"))
+      {
+        display.value = "";
+      }
+      display.value += value;
+      adjustFontSize(display);
+    }
+
+    function clearDisplay() {
+        var display = document.getElementById('display');
+        display.value = '';
+        adjustFontSize(display);
+    }
+
+    function removeLast() {
+        var display = document.getElementById('display');
+        var displayValue = display.value;
+        display.value = displayValue.substring(0, displayValue.length - 1);
+        adjustFontSize(display);
+    }
+
+    function adjustFontSize(element) {
+        var fontSize = 50; // Initial font size
+        var maxLength = 32; // Maximum characters before shrinking font size
+        var displayLength = element.value.length;
+            fontSize = Math.max(18, 28 - (displayLength - maxLength)); 
+        element.style.fontSize = fontSize + 'px';
+    }
+</script>
+
+</body>
 </html>
