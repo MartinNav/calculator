@@ -1,18 +1,21 @@
 const { invoke } = window.__TAURI__.tauri;
 
-document.getElementById("submitInput").addEventListener("click", function() {
-    const userInput = document.getElementById("userInput").value;
-    if (userInput.trim() === "") {
-        alert("Please input something");
-        return;
-    }
+let display;
 
-    invoke('call_parser', { input: userInput })
-        .then((result) => {
-            document.getElementById("parserOutput").innerText = `output: ${result}`;
-        })
-        .catch((error) => {
-            console.error('Error calling parser:', error);
-        });
+async function calculate() {
+  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+  console.log("calculate called");
+  display.value = await invoke("calculate", { equation: display.value });
+
+  console.log("calculate finished");
+ adjustFontSize(display);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  display= document.querySelector("#display");
+  document.querySelector("#equals").addEventListener("click", (e) => {
+   // e.preventDefault();
+    calculate();
+  });
 });
 
