@@ -1,7 +1,72 @@
 use crate::parser::*;
 use std::fmt;
 
-pub fn execute_parse_tree(expression: Expression) -> Result<f64, String> {
+pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, String> {
+    match expression.as_mut() {
+        Expression::Compound(first, second, op) => {
+            match first.as_mut() {
+                Expression::Compound(_, _, _) => {
+                    let tmp = execute_parse_tree(&mut *first)?;
+                    *first = Box::new(Expression::Value(tmp));
+                }
+                Expression::Value(_) => {}
+            }
+            match second.as_mut() {
+                Expression::Compound(_, _, _) => {
+                    let tmp = execute_parse_tree(&mut *second)?;
+                    *second = Box::new(Expression::Value(tmp));
+                }
+                Expression::Value(_) => {}
+            }
+            //let (a,b)=(first.as_ref(), second.as_ref());
+            let a = match first.as_ref() {
+                Expression::Value(v) => Ok(v),
+                _ => Err("Value not found".to_string()),
+            }?;
+            let b = match second.as_ref() {
+                Expression::Value(v) => Ok(v),
+                _ => Err("Value not found".to_string()),
+            }?;
+
+            match op {
+                Operator::Plus => {
+                    println!("{a} + {b}");
+                    return Ok(a + b);
+                }
+                Operator::Minus => {
+                    return Ok(a - b);
+                }
+                Operator::Multiply => {
+                    return Ok(a * b);
+                }
+                Operator::Divide => {
+                    return Ok(a / b);
+                }
+                Operator::Power => {
+                    return Ok(a.powf(*b));
+                }
+                Operator::Root => {
+                    //println!("{b} {a}");
+                    return Ok(a.powf(1. / (*b)));
+                }
+                Operator::Factorial => {
+                    let mut res = 1.0;
+                    for i in 1..(*a as i64) {
+                        //can be unsafe
+                        res *= i as f64;
+                    }
+                    return Ok(res);
+                }
+                _ => {
+                    return Err(format!("{op:?} is invalid operator on execution layer"));
+                }
+            }
+        }
+        Expression::Value(v) => {
+            return Ok(*v);
+        }
+    }
+
     Err("Unimplemented".to_string())
 }
 
@@ -13,11 +78,11 @@ mod tests {
     fn add_two_values() {
         assert_eq!(
             Ok(2.0f64),
-            execute_parse_tree(Expression::Compound(
+            execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(1.)),
                 Box::new(Expression::Value(1.)),
                 Operator::Plus
-            ))
+            )))
         );
     }
 
@@ -25,11 +90,11 @@ mod tests {
     fn subtract_two_values() {
         assert_eq!(
             Ok(0.0f64),
-            execute_parse_tree(Expression::Compound(
+            execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(1.)),
                 Box::new(Expression::Value(1.)),
                 Operator::Minus
-            ))
+            )))
         );
     }
 
@@ -37,11 +102,11 @@ mod tests {
     fn multiply_two_values() {
         assert_eq!(
             Ok(4.0f64),
-            execute_parse_tree(Expression::Compound(
+            execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(2.)),
                 Box::new(Expression::Value(2.)),
                 Operator::Multiply
-            ))
+            )))
         );
     }
 
@@ -49,11 +114,11 @@ mod tests {
     fn divide_two_values() {
         assert_eq!(
             Ok(4.0f64),
-            execute_parse_tree(Expression::Compound(
+            execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(8.)),
                 Box::new(Expression::Value(2.)),
                 Operator::Divide
-            ))
+            )))
         );
     }
 
@@ -61,11 +126,11 @@ mod tests {
     fn power_of_two_values() {
         assert_eq!(
             Ok(9.0f64),
-            execute_parse_tree(Expression::Compound(
+            execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(3.)),
                 Box::new(Expression::Value(2.)),
                 Operator::Power
-            ))
+            )))
         );
     }
 
@@ -73,11 +138,11 @@ mod tests {
     fn sqrt_value() {
         assert_eq!(
             Ok(3.0f64),
-            execute_parse_tree(Expression::Compound(
+            execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(9.)),
                 Box::new(Expression::Value(2.)),
                 Operator::Power
-            ))
+            )))
         );
     }
 
@@ -85,11 +150,11 @@ mod tests {
     fn factorial() {
         assert_eq!(
             Ok(6.0f64),
-            execute_parse_tree(Expression::Compound(
+            execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(3.)),
                 Box::new(Expression::Value(1.)),
                 Operator::Power
-            ))
+            )))
         );
     }
     /*
