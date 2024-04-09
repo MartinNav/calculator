@@ -1,134 +1,8 @@
+use crate::parser::*;
 use std::fmt;
 
-/// This enum represents the operators that are used in the parse tree+
-#[derive(Debug, Clone, PartialEq)]
-enum Operator {
-    Add,
-    Subtract,
-    Multiply,
-    Divide,
-    Power,
-    Root,
-    Factorial,
-}
-
-/// This enum represents the tokens that are used in the parse tree
-#[derive(Debug, Clone, PartialEq)]
-enum Token
-{
-    Value(f64),
-    Operator(Operator),
-}
-
-/// Indicates malformation in parse tree
-#[derive(Debug, Clone, PartialEq)]
-pub struct EvaluationError;
-
-impl fmt::Display for EvaluationError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Error while evaluating parse tree occurred")
-    }
-}
-
-/// This function is doing the actual math calculations on the parse tree
-/// When the parse tree is not valid or is malformed it will return [EvaluationError].
-/// In numerical edge cases such as division by zero [EvaluationError] will also be returned.
-pub fn evaluate_parse_tree(parse_tree: String) -> Result<f64, EvaluationError> {
-    use crate::execute::Operator::{Add, Subtract, Multiply, Divide, Power, Root, Factorial};
-    use crate::execute::Token::{Value, Operator};
-
-    // the worst part of the code
-    let tokens: Result<Vec<Token>, _> = parse_tree
-        .as_str()
-        .split_whitespace()
-        .map(|s| match s {
-            "+" => Ok(Operator(Add)),
-            "-" => Ok(Operator(Subtract)),
-            "*" => Ok(Operator(Multiply)),
-            "/" => Ok(Operator(Divide)),
-            "R" => Ok(Operator(Root)),
-            "!" => Ok(Operator(Factorial)),
-            "^" => Ok(Operator(Power)),
-            _ => match s.parse::<f64>() {
-                Ok(v) => { if v.is_finite() { Ok(Value(v)) } else { Err(EvaluationError) } }
-                Err(_) => Err(EvaluationError)
-            },
-        })
-        .collect::<_>();
-
-    if tokens.is_err() {
-        return Err(EvaluationError);
-    }
-
-    let mut tokens = tokens.unwrap();
-
-    let mut iter = 0;
-    loop {
-        match tokens.get(iter) {
-            None => {
-                return Err(EvaluationError);
-            }
-            Some(Value(_)) => {}
-            Some(Operator(op)) => {
-                let op = op.clone();
-                if iter >= 2 && tokens.len() >= 2 {
-                    let a = match tokens.remove(iter - 2)
-                    {
-                        Value(v) => v,
-                        _ => return Err(EvaluationError),
-                    };
-                    let b = match tokens.remove(iter - 2)
-                    {
-                        Value(v) => v,
-                        _ => return Err(EvaluationError),
-                    };
-
-                    match op {
-                        Add => { tokens[iter - 2] = Value(a + b); }
-                        Subtract => { tokens[iter - 2] = Value(a - b); }
-                        Multiply => { tokens[iter - 2] = Value(a * b); }
-                        Divide => {
-                            if b == 0.0 {
-                                return Err(EvaluationError);
-                            }
-                            tokens[iter - 2] = Value(a / b);
-                        }
-                        Root => {
-                            // for simplicity, we don't take odd roots of negative numbers into account
-                            if a < 0.0 {
-                                return Err(EvaluationError);
-                            }
-                            tokens[iter - 2] = Value(a.powf(1. / b));
-                        }
-                        Power => { tokens[iter - 2] = Value(a.powf(b)); }
-                        Factorial => {
-                            let mut n_fac: f64 = 1.0;
-                            for i in (b.round() as i64)..=(a.round() as i64) {
-                                n_fac *= i as f64;
-                            }
-                            tokens[iter - 2] = Value(n_fac);
-                        }
-                    }
-                    iter = 0;
-                }
-            }
-        }
-        if tokens.len() == 1 {
-            return match tokens.get(0)
-            {
-                Some(Value(v)) => {
-                    assert!(v.is_finite());
-                    Ok(*v)
-                },
-                _ => Err(EvaluationError)
-            };
-        }
-
-        iter += 1;
-        if iter > tokens.len() {
-            return Err(EvaluationError);
-        }
-    }
+pub fn execute_parse_tree(expression: Expression) -> Result<f64, String> {
+    Err("Unimplemented".to_string())
 }
 
 #[cfg(test)]
@@ -137,101 +11,117 @@ mod tests {
 
     #[test]
     fn add_two_values() {
-        assert_eq!(evaluate_parse_tree("2 2 +".to_string()), Ok(4.0));
+        assert_eq!(
+            Ok(2.0f64),
+            execute_parse_tree(Expression::Compound(
+                Box::new(Expression::Value(1.)),
+                Box::new(Expression::Value(1.)),
+                Operator::Plus
+            ))
+        );
     }
 
     #[test]
     fn subtract_two_values() {
-        assert_eq!(evaluate_parse_tree("2 2 -".to_string()), Ok(0.0));
+        assert_eq!(
+            Ok(0.0f64),
+            execute_parse_tree(Expression::Compound(
+                Box::new(Expression::Value(1.)),
+                Box::new(Expression::Value(1.)),
+                Operator::Minus
+            ))
+        );
     }
 
     #[test]
     fn multiply_two_values() {
-        assert_eq!(evaluate_parse_tree("2 4 *".to_string()), Ok(8.0));
+        assert_eq!(
+            Ok(4.0f64),
+            execute_parse_tree(Expression::Compound(
+                Box::new(Expression::Value(2.)),
+                Box::new(Expression::Value(2.)),
+                Operator::Multiply
+            ))
+        );
     }
 
     #[test]
     fn divide_two_values() {
-        assert_eq!(evaluate_parse_tree("8 2 /".to_string()), Ok(4.0));
+        assert_eq!(
+            Ok(4.0f64),
+            execute_parse_tree(Expression::Compound(
+                Box::new(Expression::Value(8.)),
+                Box::new(Expression::Value(2.)),
+                Operator::Divide
+            ))
+        );
     }
 
     #[test]
     fn power_of_two_values() {
-        assert_eq!(evaluate_parse_tree("2 5 ^".to_string()), Ok(32.0));
+        assert_eq!(
+            Ok(9.0f64),
+            execute_parse_tree(Expression::Compound(
+                Box::new(Expression::Value(3.)),
+                Box::new(Expression::Value(2.)),
+                Operator::Power
+            ))
+        );
     }
 
     #[test]
     fn sqrt_value() {
-        assert_eq!(evaluate_parse_tree("16 2 R".to_string()), Ok(4.0));
+        assert_eq!(
+            Ok(3.0f64),
+            execute_parse_tree(Expression::Compound(
+                Box::new(Expression::Value(9.)),
+                Box::new(Expression::Value(2.)),
+                Operator::Power
+            ))
+        );
     }
 
     #[test]
     fn factorial() {
-        assert_eq!(evaluate_parse_tree("3 1 !".to_string()), Ok(6.0));
+        assert_eq!(
+            Ok(6.0f64),
+            execute_parse_tree(Expression::Compound(
+                Box::new(Expression::Value(3.)),
+                Box::new(Expression::Value(1.)),
+                Operator::Power
+            ))
+        );
     }
+    /*
+    #[test]
+    fn add_multiple_values() {}
 
     #[test]
-    fn add_multiple_values() {
-        assert_eq!(evaluate_parse_tree("2 2 + 2 4 + +".to_string()), Ok(10.0));
-    }
+    fn composed_equation_1() {}
 
     #[test]
-    fn composed_equation_1() {
-        assert_eq!(evaluate_parse_tree("3 2 1 + *".to_string()), Ok(9.0));
-    }
-
-    #[test]
-    fn composed_equation_2() {
-        assert_eq!(evaluate_parse_tree("3 4 * 2 5 * +".to_string()), Ok(22.0));
-    }
+    fn composed_equation_2() {}
+    */
 
     // These are invalid operations
 
+    /*
     #[test]
-    fn invalid_multiple_ops() {
-        assert_eq!(
-            evaluate_parse_tree("2 2 + * -".to_string()),
-            Err(EvaluationError)
-        );
-    }
+    fn invalid_multiple_ops() {}
 
     #[test]
-    fn invalid_multiple_numbers() {
-        assert_eq!(
-            evaluate_parse_tree("3 2 2 +".to_string()),
-            Err(EvaluationError)
-        );
-    }
+    fn invalid_multiple_numbers() {}
 
     #[test]
-    fn invalid_root_of_negative() {
-        assert_eq!(
-            evaluate_parse_tree("-3 2 R".to_string()),
-            Err(EvaluationError)
-        );
-    }
+    fn invalid_root_of_negative() {}
 
     #[test]
-    fn invalid_div_by_zero() {
-        assert_eq!(
-            evaluate_parse_tree("3 0 /".to_string()),
-            Err(EvaluationError)
-        );
-    }
+    fn invalid_div_by_zero() {}
 
     #[test]
-    fn invalid_character_val() {
-        assert_eq!(
-            evaluate_parse_tree("2 $ +".to_string()),
-            Err(EvaluationError)
-        );
-    }
+    fn invalid_character_val() {}
 
     #[test]
-    fn invalid_character_op() {
-        assert_eq!(
-            evaluate_parse_tree("2 2 $".to_string()),
-            Err(EvaluationError)
-        );
-    }
+    fn invalid_character_op() {}
+    */
 }
