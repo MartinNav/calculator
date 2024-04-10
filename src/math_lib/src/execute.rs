@@ -18,7 +18,6 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
                 }
                 Expression::Value(_) => {}
             }
-            //let (a,b)=(first.as_ref(), second.as_ref());
             let a = match first.as_ref() {
                 Expression::Value(v) => Ok(v),
                 _ => Err("Value not found".to_string()),
@@ -47,11 +46,11 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
                 }
                 Operator::Root => {
                     //println!("{b} {a}");
-                    return Ok(a.powf(1. / (*b)));
+                    return Ok(f64::powf(*a,1. / (*b)));
                 }
                 Operator::Factorial => {
                     let mut res = 1.0;
-                    for i in 1..(*a as i64) {
+                    for i in 1..=(*a as i64) {
                         //can be unsafe
                         res *= i as f64;
                     }
@@ -157,10 +156,26 @@ mod tests {
             )))
         );
     }
-    /*
     #[test]
-    fn add_multiple_values() {}
+    fn add_multiple_values() {
+        let inner_exp = Box::new(Expression::Compound(
+                Box::new(Expression::Value(1.)),
+                Box::new(Expression::Value(1.)),
+                Operator::Plus
+            ));
 
+        assert_eq!(
+            Ok(3.0f64),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                inner_exp,
+                Box::new(Expression::Value(1.)),
+                Operator::Plus
+            )))
+        );
+
+    }
+
+    /*
     #[test]
     fn composed_equation_1() {}
 
