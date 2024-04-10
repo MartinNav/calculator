@@ -178,6 +178,17 @@ mod tests {
         );
 
     }
+    #[test]
+    fn divide_by_zero() {
+        assert_eq!(
+            Ok(f64::INFINITY),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(8.)),
+                Box::new(Expression::Value(0.)),
+                Operator::Divide
+            )))
+        );
+    }
 
     /*
     #[test]
@@ -188,6 +199,16 @@ mod tests {
     */
 
     // These are invalid operations
+    #[test]
+    fn negative_factorial(){
+        assert_eq!( Err("Invalid factorial value".to_string()),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(-5.)),
+                Box::new(Expression::Value(1.)),
+                Operator::Factorial
+            )))
+        );
+    }
 
     /*
     #[test]
