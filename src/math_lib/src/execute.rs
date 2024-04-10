@@ -50,9 +50,8 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
                 }
                 Operator::Factorial => {
                     let mut res = 1.0;
-                    for i in 1..=(*a as i64) {
-                        //can be unsafe
-                        res *= i as f64;
+                    if *a>1.0 {
+                     (1..=(*a as i64)).for_each(|i| res*=i as f64);
                     }
                     return Ok(res);
                 }
@@ -140,7 +139,7 @@ mod tests {
             execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(9.)),
                 Box::new(Expression::Value(2.)),
-                Operator::Power
+                Operator::Root
             )))
         );
     }
@@ -152,7 +151,7 @@ mod tests {
             execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(3.)),
                 Box::new(Expression::Value(1.)),
-                Operator::Power
+                Operator::Factorial
             )))
         );
     }
