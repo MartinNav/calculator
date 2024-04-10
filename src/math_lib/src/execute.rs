@@ -1,6 +1,9 @@
 use crate::parser::*;
 use std::fmt;
-
+/// # Execute parse tree
+/// This function gets on input mutable [Box] pointer to [Expression].
+/// In case of inability to calculate value error message of type [String] will be returned.
+/// [f64::NAN] is considered as valid numeric output.
 pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, String> {
     match expression.as_mut() {
         Expression::Compound(first, second, op) => {
@@ -45,10 +48,12 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
                     return Ok(a.powf(*b));
                 }
                 Operator::Root => {
-                    //println!("{b} {a}");
                     return Ok(f64::powf(*a,1. / (*b)));
                 }
                 Operator::Factorial => {
+                    if *a<0. {
+                        return Err("Invalid factorial value".to_string())
+                    }
                     let mut res = 1.0;
                     if *a>1.0 {
                      (1..=(*a as i64)).for_each(|i| res*=i as f64);
