@@ -48,15 +48,15 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
                     return Ok(a.powf(*b));
                 }
                 Operator::Root => {
-                    return Ok(f64::powf(*a,1. / (*b)));
+                    return Ok(f64::powf(*a, 1. / (*b)));
                 }
                 Operator::Factorial => {
-                    if *a<0. {
-                        return Err("Invalid factorial value".to_string())
+                    if *a < 0. {
+                        return Err("Invalid factorial value".to_string());
                     }
                     let mut res = 1.0;
-                    if *a>1.0 {
-                     (1..=(*a as i64)).for_each(|i| res*=i as f64);
+                    if *a > 1.0 {
+                        (1..=(*a as i64)).for_each(|i| res *= i as f64);
                     }
                     return Ok(res);
                 }
@@ -163,10 +163,10 @@ mod executor_tests {
     #[test]
     fn add_multiple_values() {
         let inner_exp = Box::new(Expression::Compound(
-                Box::new(Expression::Value(1.)),
-                Box::new(Expression::Value(1.)),
-                Operator::Plus
-            ));
+            Box::new(Expression::Value(1.)),
+            Box::new(Expression::Value(1.)),
+            Operator::Plus,
+        ));
 
         assert_eq!(
             Ok(3.0f64),
@@ -176,7 +176,6 @@ mod executor_tests {
                 Operator::Plus
             )))
         );
-
     }
     #[test]
     fn divide_by_zero() {
@@ -189,39 +188,33 @@ mod executor_tests {
             )))
         );
     }
-    
+
     #[test]
     fn large_composite_equation() {
         // (3-1)*2 + (3!)
-        let sub_subtraction = Box::new(
-            Expression::Compound(
-                Box::new(Expression::Value(3.0)),
-                Box::new(Expression::Value(1.0)),
-                Operator::Minus
-            )
+        let sub_subtraction = Box::new(Expression::Compound(
+            Box::new(Expression::Value(3.0)),
+            Box::new(Expression::Value(1.0)),
+            Operator::Minus,
+        ));
+        let sub_mult = Box::new(Expression::Compound(
+            sub_subtraction,
+            Box::new(Expression::Value(2.0)),
+            Operator::Multiply,
+        ));
+        let fact = Box::new(Expression::Compound(
+            Box::new(Expression::Value(3.0)),
+            Box::new(Expression::Value(1.0)),
+            Operator::Factorial,
+        ));
+        assert_eq!(
+            Ok(10.0),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                sub_mult,
+                fact,
+                Operator::Plus
+            )))
         );
-        let sub_mult = Box::new(
-            Expression::Compound(
-                sub_subtraction,
-                Box::new(Expression::Value(2.0)),
-                Operator::Multiply
-            )
-        );
-        let fact = Box::new(
-            Expression::Compound(
-                Box::new(Expression::Value(3.0)),
-                Box::new(Expression::Value(1.0)),
-                Operator::Factorial
-            )
-        );
-            assert_eq!(Ok(10.0), execute_parse_tree(
-            & mut Box::new(Expression::Compound(
-            sub_mult,
-            fact,
-            Operator::Plus
-            ))
-            ));
-
     }
 
     /*
@@ -234,13 +227,37 @@ mod executor_tests {
 
     // These are invalid operations
     #[test]
-    fn invalid_negative_factorial(){
-        assert_eq!( Err("Invalid factorial value".to_string()),
+    fn invalid_negative_factorial() {
+        assert_eq!(
+            Err("Invalid factorial value".to_string()),
             execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(-5.)),
                 Box::new(Expression::Value(1.)),
                 Operator::Factorial
             )))
+        );
+    }
+    #[test]
+    fn negative_sqrt() {
+        assert_eq!(
+            Ok(0.25),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(16.0)),
+                Box::new(Expression::Value(-2.0)),
+                Operator::Root
+            )))
+        );
+        assert_eq!(
+            format!("{}", f64::NAN),
+            format!(
+                "{}",
+                execute_parse_tree(&mut Box::new(Expression::Compound(
+                    Box::new(Expression::Value(-16.0)),
+                    Box::new(Expression::Value(2.0)),
+                    Operator::Root
+                )))
+                .unwrap()
+            )
         );
     }
 
