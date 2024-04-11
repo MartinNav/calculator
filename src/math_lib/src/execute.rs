@@ -74,7 +74,7 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
 }
 
 #[cfg(test)]
-mod tests {
+mod executor_tests {
     use super::*;
 
     #[test]
@@ -189,6 +189,40 @@ mod tests {
             )))
         );
     }
+    
+    #[test]
+    fn large_composite_equation() {
+        // (3-1)*2 + (3!)
+        let sub_subtraction = Box::new(
+            Expression::Compound(
+                Box::new(Expression::Value(3.0)),
+                Box::new(Expression::Value(1.0)),
+                Operator::Minus
+            )
+        );
+        let sub_mult = Box::new(
+            Expression::Compound(
+                sub_subtraction,
+                Box::new(Expression::Value(2.0)),
+                Operator::Multiply
+            )
+        );
+        let fact = Box::new(
+            Expression::Compound(
+                Box::new(Expression::Value(3.0)),
+                Box::new(Expression::Value(1.0)),
+                Operator::Factorial
+            )
+        );
+            assert_eq!(Ok(10.0), execute_parse_tree(
+            & mut Box::new(Expression::Compound(
+            sub_mult,
+            fact,
+            Operator::Plus
+            ))
+            ));
+
+    }
 
     /*
     #[test]
@@ -200,7 +234,7 @@ mod tests {
 
     // These are invalid operations
     #[test]
-    fn negative_factorial(){
+    fn invalid_negative_factorial(){
         assert_eq!( Err("Invalid factorial value".to_string()),
             execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(-5.)),
