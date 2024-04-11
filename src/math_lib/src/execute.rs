@@ -248,16 +248,14 @@ mod executor_tests {
             )))
         );
         assert_eq!(
-            format!("{}", f64::NAN),
-            format!(
-                "{}",
-                execute_parse_tree(&mut Box::new(Expression::Compound(
-                    Box::new(Expression::Value(-16.0)),
-                    Box::new(Expression::Value(2.0)),
-                    Operator::Root
-                )))
-                .unwrap()
-            )
+            true,
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(-16.0)),
+                Box::new(Expression::Value(2.0)),
+                Operator::Root
+            )))
+            .unwrap()
+            .is_nan()
         );
     }
 
