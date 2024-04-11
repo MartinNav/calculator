@@ -237,6 +237,34 @@ mod executor_tests {
             )))
         );
     }
+
+    #[test]
+    fn invalid_operation() {
+        assert_eq!(
+            Err("OpenParen is invalid operator on execution layer".to_string()),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(0.)),
+                Box::new(Expression::Value(0.)),
+                Operator::OpenParen
+            )))
+        );
+        assert_eq!(
+            Err("CloseParen is invalid operator on execution layer".to_string()),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(0.)),
+                Box::new(Expression::Value(0.)),
+                Operator::CloseParen
+            )))
+        );
+        assert_eq!(
+            Err("EndOfInput is invalid operator on execution layer".to_string()),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(0.)),
+                Box::new(Expression::Value(0.)),
+                Operator::EndOfInput
+            )))
+        );
+    }
     #[test]
     fn negative_sqrt() {
         assert_eq!(
