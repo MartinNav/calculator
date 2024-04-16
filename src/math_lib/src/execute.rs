@@ -68,8 +68,6 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
             return Ok(*v);
         }
     }
-
-    Err("Unimplemented".to_string())
 }
 
 #[cfg(test)]
@@ -216,7 +214,6 @@ mod executor_tests {
         );
     }
 
-
     // These are invalid operations
     #[test]
     fn invalid_negative_factorial() {
@@ -278,5 +275,4 @@ mod executor_tests {
             .is_nan()
         );
     }
-
 }
