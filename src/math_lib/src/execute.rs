@@ -32,7 +32,6 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
 
             match op {
                 Operator::Plus => {
-                    println!("{a} + {b}");
                     return Ok(a + b);
                 }
                 Operator::Minus => {
@@ -217,13 +216,6 @@ mod executor_tests {
         );
     }
 
-    /*
-    #[test]
-    fn composed_equation_1() {}
-
-    #[test]
-    fn composed_equation_2() {}
-    */
 
     // These are invalid operations
     #[test]
@@ -287,23 +279,4 @@ mod executor_tests {
         );
     }
 
-    /*
-    #[test]
-    fn invalid_multiple_ops() {}
-
-    #[test]
-    fn invalid_multiple_numbers() {}
-
-    #[test]
-    fn invalid_root_of_negative() {}
-
-    #[test]
-    fn invalid_div_by_zero() {}
-
-    #[test]
-    fn invalid_character_val() {}
-
-    #[test]
-    fn invalid_character_op() {}
-    */
 }
