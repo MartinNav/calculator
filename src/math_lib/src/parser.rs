@@ -7,6 +7,8 @@
 //TODO: Add support for negative numbers
 //TODO: Bug, "(1+2" sends it to oblivion, todo: exit gracefully instead of exiting whole program
 
+use crate::execute_parse_tree;
+
 // Operator enum representing possible operators in the expressions
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Operator {
@@ -272,7 +274,11 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
 
 pub fn parse(input: &str) -> Result<String, String> {
     let postfix_result = to_postfix(input)?;
-    let expression_tree = create_expression_tree(postfix_result)?;
-    print_expression_tree(&expression_tree, 0);
-    Ok("Tree created successfully".to_string())
+    let mut expression_tree = Box::new(create_expression_tree(postfix_result)?);
+    //print_expression_tree(&expression_tree, 0);
+    //Ok("Tree created successfully".to_string())
+    match execute_parse_tree(&mut expression_tree) {
+        Ok(res) => Ok(format!("{res}")),
+        Err(e) => Err(format!("Error: {e}")),
+    }
 }

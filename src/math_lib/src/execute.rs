@@ -1,6 +1,9 @@
 use crate::parser::*;
 use std::fmt;
-
+/// # Execute parse tree
+/// This function gets on input mutable [Box] pointer to [Expression].
+/// In case of inability to calculate value error message of type [String] will be returned.
+/// [f64::NAN] is considered as valid numeric output.
 pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, String> {
     match expression.as_mut() {
         Expression::Compound(first, second, op) => {
@@ -18,7 +21,6 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
                 }
                 Expression::Value(_) => {}
             }
-            //let (a,b)=(first.as_ref(), second.as_ref());
             let a = match first.as_ref() {
                 Expression::Value(v) => Ok(v),
                 _ => Err("Value not found".to_string()),
@@ -30,7 +32,6 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
 
             match op {
                 Operator::Plus => {
-                    println!("{a} + {b}");
                     return Ok(a + b);
                 }
                 Operator::Minus => {
@@ -46,14 +47,15 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
                     return Ok(a.powf(*b));
                 }
                 Operator::Root => {
-                    //println!("{b} {a}");
-                    return Ok(a.powf(1. / (*b)));
+                    return Ok(f64::powf(*a, 1. / (*b)));
                 }
                 Operator::Factorial => {
+                    if *a < 0. {
+                        return Err("Invalid factorial value".to_string());
+                    }
                     let mut res = 1.0;
-                    for i in 1..(*a as i64) {
-                        //can be unsafe
-                        res *= i as f64;
+                    if *a > 1.0 {
+                        (1..=(*a as i64)).for_each(|i| res *= i as f64);
                     }
                     return Ok(res);
                 }
@@ -66,12 +68,10 @@ pub fn execute_parse_tree(expression: &mut Box<Expression>) -> Result<f64, Strin
             return Ok(*v);
         }
     }
-
-    Err("Unimplemented".to_string())
 }
 
 #[cfg(test)]
-mod tests {
+mod executor_tests {
     use super::*;
 
     #[test]
@@ -141,7 +141,7 @@ mod tests {
             execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(9.)),
                 Box::new(Expression::Value(2.)),
-                Operator::Power
+                Operator::Root
             )))
         );
     }
@@ -153,40 +153,126 @@ mod tests {
             execute_parse_tree(&mut Box::new(Expression::Compound(
                 Box::new(Expression::Value(3.)),
                 Box::new(Expression::Value(1.)),
-                Operator::Power
+                Operator::Factorial
             )))
         );
     }
-    /*
     #[test]
-    fn add_multiple_values() {}
+    fn add_multiple_values() {
+        let inner_exp = Box::new(Expression::Compound(
+            Box::new(Expression::Value(1.)),
+            Box::new(Expression::Value(1.)),
+            Operator::Plus,
+        ));
+
+        assert_eq!(
+            Ok(3.0f64),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                inner_exp,
+                Box::new(Expression::Value(1.)),
+                Operator::Plus
+            )))
+        );
+    }
+    #[test]
+    fn divide_by_zero() {
+        assert_eq!(
+            Ok(f64::INFINITY),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(8.)),
+                Box::new(Expression::Value(0.)),
+                Operator::Divide
+            )))
+        );
+    }
 
     #[test]
-    fn composed_equation_1() {}
-
-    #[test]
-    fn composed_equation_2() {}
-    */
+    fn large_composite_equation() {
+        // (3-1)*2 + (3!)
+        let sub_subtraction = Box::new(Expression::Compound(
+            Box::new(Expression::Value(3.0)),
+            Box::new(Expression::Value(1.0)),
+            Operator::Minus,
+        ));
+        let sub_mult = Box::new(Expression::Compound(
+            sub_subtraction,
+            Box::new(Expression::Value(2.0)),
+            Operator::Multiply,
+        ));
+        let fact = Box::new(Expression::Compound(
+            Box::new(Expression::Value(3.0)),
+            Box::new(Expression::Value(1.0)),
+            Operator::Factorial,
+        ));
+        assert_eq!(
+            Ok(10.0),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                sub_mult,
+                fact,
+                Operator::Plus
+            )))
+        );
+    }
 
     // These are invalid operations
-
-    /*
     #[test]
-    fn invalid_multiple_ops() {}
-
-    #[test]
-    fn invalid_multiple_numbers() {}
-
-    #[test]
-    fn invalid_root_of_negative() {}
-
-    #[test]
-    fn invalid_div_by_zero() {}
+    fn invalid_negative_factorial() {
+        assert_eq!(
+            Err("Invalid factorial value".to_string()),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(-5.)),
+                Box::new(Expression::Value(1.)),
+                Operator::Factorial
+            )))
+        );
+    }
 
     #[test]
-    fn invalid_character_val() {}
-
+    fn invalid_operation() {
+        assert_eq!(
+            Err("OpenParen is invalid operator on execution layer".to_string()),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(0.)),
+                Box::new(Expression::Value(0.)),
+                Operator::OpenParen
+            )))
+        );
+        assert_eq!(
+            Err("CloseParen is invalid operator on execution layer".to_string()),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(0.)),
+                Box::new(Expression::Value(0.)),
+                Operator::CloseParen
+            )))
+        );
+        assert_eq!(
+            Err("EndOfInput is invalid operator on execution layer".to_string()),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(0.)),
+                Box::new(Expression::Value(0.)),
+                Operator::EndOfInput
+            )))
+        );
+    }
     #[test]
-    fn invalid_character_op() {}
-    */
+    fn negative_sqrt() {
+        assert_eq!(
+            Ok(0.25),
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(16.0)),
+                Box::new(Expression::Value(-2.0)),
+                Operator::Root
+            )))
+        );
+        assert_eq!(
+            true,
+            execute_parse_tree(&mut Box::new(Expression::Compound(
+                Box::new(Expression::Value(-16.0)),
+                Box::new(Expression::Value(2.0)),
+                Operator::Root
+            )))
+            .unwrap()
+            .is_nan()
+        );
+    }
 }
