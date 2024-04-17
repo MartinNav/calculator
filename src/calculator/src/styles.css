@@ -57,3 +57,16 @@ body {
   background-color: #929291;
   color: #FFFEF9;
 }
+.helpbtn{
+  position: absolute;
+  top: 3px;
+  left: 8px;
+/*  -webkit-appearance: button;
+  -moz-appearance: button;
+  appearance: button;*/
+  text-decoration: none;
+  border: 1px solid #333333;
+  color: black;
+  background-color:#BBBBBB;
+
+}
