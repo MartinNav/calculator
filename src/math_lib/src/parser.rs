@@ -7,8 +7,6 @@
 //TODO: Add support for negative numbers
 //TODO: Bug, "(1+2" sends it to oblivion, todo: exit gracefully instead of exiting whole program
 
-use crate::execute_parse_tree;
-
 // Operator enum representing possible operators in the expressions
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Operator {
@@ -40,12 +38,6 @@ impl Operator {
         }
     }
 }
-
-pub enum Expression {
-    Compound(Box<Expression>, Box<Expression>, Operator),
-    Value(f64),
-}
-
 // Token enum representing either a value or an operator
 #[derive(Debug, Clone, PartialEq)]
 enum Token {
@@ -53,24 +45,13 @@ enum Token {
     Operator(Operator, usize), // For operators including parentheses and end of input
 }
 
-fn print_expression_tree(expr: &Expression, depth: usize) {
-    match expr {
-        Expression::Value(val) => println!("{:indent$}Value: {}", "", val, indent = depth * 2),
-        Expression::Compound(left, right, op) => {
-            println!("{:indent$}Operator: {:?}", "", op, indent = depth * 2);
-            print_expression_tree(left, depth + 1);
-            print_expression_tree(right, depth + 1);
-        }
-    }
-}
-
-fn create_expression_tree(tokens: Vec<Token>) -> Result<Expression, String> {
-    let mut stack: Vec<Expression> = Vec::new();
+fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
+    let mut stack: Vec<f64> = Vec::new();
 
     for token in tokens {
         match token {
             Token::Operand(num) => {
-                stack.push(Expression::Value(num));
+                stack.push(num);
             }
             Token::Operator(op, _) => {
                 if stack.len() < 2 {
@@ -79,9 +60,49 @@ fn create_expression_tree(tokens: Vec<Token>) -> Result<Expression, String> {
                 let right = stack.pop().unwrap();
                 let left = stack.pop().unwrap();
 
-                stack.push(Expression::Compound(Box::new(left), Box::new(right), op));
+                let answer = match op {
+                    Operator::Plus => {
+                        left + right
+                    }
+                    Operator::Minus => {
+                        left - right
+                    }
+                    Operator::Multiply => {
+                        left * right
+                    }
+                    Operator::Divide => {
+                        if right.abs() < f64::EPSILON {
+                            return Err("Cannot divide by zero".to_string());
+                        }
+                        left / right
+                    }
+                    Operator::Power => {
+                        left.powf(right)
+                    }
+                    Operator::Root => {
+                        if right.abs() < f64::EPSILON {
+                            return Err("Cannot take the 0th root".to_string());
+                        }
+                        if left < 0. {
+                            return Err("Cannot take the root of a negative number".to_string());
+                        }
+                        left.powf(1. / right)
+                    }
+                    Operator::Factorial => {
+                        if left < 0. {
+                            return Err("Cannot take factorial of a negative number".to_string());
+                        }
+                        let mut res = 1.0;
+                        (2..=(left as i64)).for_each(|i| res *= i as f64);
+                        res
+                    }
+                    _ => {
+                        return Err(format!("{op:?} is an invalid operator"));
+                    }
+                };
+
+                stack.push(answer);
             }
-            _ => return Err("Unexpected token".to_string()),
         }
     }
 
@@ -274,11 +295,5 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
 
 pub fn parse(input: &str) -> Result<String, String> {
     let postfix_result = to_postfix(input)?;
-    let mut expression_tree = Box::new(create_expression_tree(postfix_result)?);
-    //print_expression_tree(&expression_tree, 0);
-    //Ok("Tree created successfully".to_string())
-    match execute_parse_tree(&mut expression_tree) {
-        Ok(res) => Ok(format!("{res}")),
-        Err(e) => Err(format!("Error: {e}")),
-    }
+    evaluate_expression(postfix_result)?.tostring()
 }
