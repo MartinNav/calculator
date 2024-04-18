@@ -3,7 +3,6 @@
 //          https://github.com/RichardGajdosik/VUTFIT_IFJ_2021_Projekt/blob/master/src/expressions.c
 
 //TODO: Better comments
-//TODO: Connect to FE and BE
 //TODO: Add support for negative numbers
 //TODO: Bug, "(1+2" sends it to oblivion, todo: exit gracefully instead of exiting whole program
 
