@@ -22,27 +22,29 @@ pub enum Operator {
     EndOfInput, // Represents '$'
 }
 
-impl Operator {
-    fn precedence_index(&self) -> usize {
-        match self {
-            Operator::Multiply => 0,
-            Operator::Divide => 1,
-            Operator::Plus => 2,
-            Operator::Minus => 3,
-            Operator::OpenParen => 4,
-            Operator::CloseParen => 5,
-            Operator::EndOfInput => 6,
-            Operator::Power => 8,
-            Operator::Root => 9,
-            Operator::Factorial => 10,
-        }
-    }
-}
 // Token enum representing either a value or an operator
 #[derive(Debug, Clone, PartialEq)]
 enum Token {
-    Operand(f64),              // For numerical values
-    Operator(Operator, usize), // For operators including parentheses and end of input
+    Operand(f64),       // For numerical values
+    Operator(Operator), // For operators including parentheses and end of input
+}
+
+impl Token {
+    fn precedence_index(&self) -> usize {
+        match self {
+            Token::Operator(Operator::Multiply) => 0,
+            Token::Operator(Operator::Divide) => 1,
+            Token::Operator(Operator::Plus) => 2,
+            Token::Operator(Operator::Minus) => 3,
+            Token::Operator(Operator::OpenParen) => 4,
+            Token::Operator(Operator::CloseParen) => 5,
+            Token::Operator(Operator::EndOfInput) => 6,
+            Token::Operand(_) => 7,
+            Token::Operator(Operator::Power) => 8,
+            Token::Operator(Operator::Root) => 9,
+            Token::Operator(Operator::Factorial) => 10,
+        }
+    }
 }
 
 fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
@@ -53,7 +55,7 @@ fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
             Token::Operand(num) => {
                 stack.push(num);
             }
-            Token::Operator(op, _) => {
+            Token::Operator(op) => {
                 if stack.len() < 2 {
                     return Err("Invalid expression".to_string());
                 }
@@ -149,10 +151,7 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
 
     let mut Input_queue: Vec<Token> = Vec::new();
     let mut Output_queue: Vec<Token> = Vec::new();
-    let mut stack: Vec<Token> = vec![Token::Operator(
-        Operator::EndOfInput,
-        Operator::EndOfInput.precedence_index(),
-    )];
+    let mut stack: Vec<Token> = vec![Token::Operator(Operator::EndOfInput)];
     let mut current_number = String::new();
 
     let mut input_chars = input.chars().peekable();
@@ -161,39 +160,39 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
         match c {
             '+' => {
                 let op = Operator::Plus;
-                Input_queue.push(Token::Operator(op, op.precedence_index()));
+                Input_queue.push(Token::Operator(op));
             }
             '-' => {
                 let op = Operator::Minus;
-                Input_queue.push(Token::Operator(op, op.precedence_index()));
+                Input_queue.push(Token::Operator(op));
             }
             '*' => {
                 let op = Operator::Multiply;
-                Input_queue.push(Token::Operator(op, op.precedence_index()));
+                Input_queue.push(Token::Operator(op));
             }
             '/' => {
                 let op = Operator::Divide;
-                Input_queue.push(Token::Operator(op, op.precedence_index()));
+                Input_queue.push(Token::Operator(op));
             }
             '(' => {
                 let op = Operator::OpenParen;
-                Input_queue.push(Token::Operator(op, op.precedence_index()));
+                Input_queue.push(Token::Operator(op));
             }
             ')' => {
                 let op = Operator::CloseParen;
-                Input_queue.push(Token::Operator(op, op.precedence_index()));
+                Input_queue.push(Token::Operator(op));
             }
             '^' => {
                 let op = Operator::Power;
-                Input_queue.push(Token::Operator(op, op.precedence_index()));
+                Input_queue.push(Token::Operator(op));
             }
             '√' => {
                 let op = Operator::Root;
-                Input_queue.push(Token::Operator(op, op.precedence_index()));
+                Input_queue.push(Token::Operator(op));
             }
             '!' => {
                 let op = Operator::Factorial;
-                Input_queue.push(Token::Operator(op, op.precedence_index()));
+                Input_queue.push(Token::Operator(op));
             }
             '0'..='9' | ',' | '.' => {
                 // If the character is a comma, replace it with a decimal point
@@ -214,44 +213,23 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
         }
     }
 
-    Input_queue.push(Token::Operator(
-        Operator::EndOfInput,
-        Operator::EndOfInput.precedence_index(),
-    ));
+    Input_queue.push(Token::Operator(Operator::EndOfInput));
     Input_queue.reverse();
 
-    let mut index_first = 0;
-    let mut index_second = 0;
     while let Some(token) = Input_queue.last().cloned() {
         println!("Current stack: {:?}", stack);
 
         // Pop top of vector stack
         let top = stack.last().cloned();
-        match top {
-            // If the top of the stack is an operand, set index to 7
-            Some(Token::Operand(_)) => {
-                index_first = 7;
-            }
-            // Find the index of the top of the stack in the precedence table
-            Some(Token::Operator(op, _)) => {
-                index_first = op.precedence_index();
-            }
-            // None
-            _ => {
-                println!("Unexpected token or empty stack");
-            }
-        }
 
-        match token {
-            // If first Input_queue member is an operand, set index to 7
-            Token::Operand(_) => {
-                index_second = 7;
+        let index_first= match top {
+            Some(token) => token.precedence_index(),
+            None => {
+                println!("Empty stack");
+                0
             }
-            // Find index of first Input_queue member in precedence table
-            Token::Operator(op, _) => {
-                index_second = op.precedence_index();
-            }
-        }
+        };
+        let index_second = token.precedence_index();
 
         let precedence = precedence_table[index_first][index_second];
 
