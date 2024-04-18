@@ -273,5 +273,5 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
 
 pub fn parse(input: &str) -> Result<String, String> {
     let postfix_result = to_postfix(input)?;
-    evaluate_expression(postfix_result)?.tostring()
+    Ok(evaluate_expression(postfix_result)?.to_string())
 }
