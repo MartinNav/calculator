@@ -235,7 +235,7 @@ fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
     let mut stack: Vec<Token> = vec![Token::Operator(Operator::EndOfInput)];
 
     while let Some(token) = input_queue.last().cloned() {
-        println!("Current stack: {:?}", stack);
+        //println!("Current stack: {:?}", stack);
 
         // Pop top of vector stack
         let top = stack.last().cloned();
@@ -243,7 +243,7 @@ fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
         let index_first = match top {
             Some(token) => token.precedence_index(),
             None => {
-                println!("Empty stack");
+                //println!("Empty stack");
                 0
             }
         };
@@ -254,13 +254,13 @@ fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
         match precedence {
             '<' => {
                 // If input operator has lower precedence, push it onto the stack
-                println!("Pushing top of Input_queue to stack");
+                //println!("Pushing top of Input_queue to stack");
                 let token_to_push_to_stack = input_queue.pop().unwrap();
                 stack.push(token_to_push_to_stack);
             }
             '>' => {
                 // If input operator has higher precedence, pop operator from stack onto the Output_queue
-                println!("Popping token from stack, pushing it to the output queue.");
+                //println!("Popping token from stack, pushing it to the output queue.");
                 let token_to_push_to_queue = stack.pop().expect("Expected token on the stack");
                 output_queue.push(token_to_push_to_queue);
             }
