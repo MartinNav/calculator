@@ -137,8 +137,80 @@ fn process_current_number(
     Ok(())
 }
 
+fn tokenize(input: &str) -> Result<Vec<Token>, String> {
+    let mut input_queue: Vec<Token> = Vec::new();
+    let mut current_number = String::new();
+
+    let mut input_chars = input.chars().peekable();
+    while let Some(c) = input_chars.next() {
+        match c {
+            '+' => {
+                let op = Operator::Plus;
+                input_queue.push(Token::Operator(op));
+            }
+            '-' => {
+                let op = Operator::Minus;
+                input_queue.push(Token::Operator(op));
+            }
+            '*' => {
+                let op = Operator::Multiply;
+                input_queue.push(Token::Operator(op));
+            }
+            '/' => {
+                let op = Operator::Divide;
+                input_queue.push(Token::Operator(op));
+            }
+            '%' => {
+                let op = Operator::Percent;
+                input_queue.push(Token::Operator(op));
+            }
+            '(' => {
+                let op = Operator::OpenParen;
+                input_queue.push(Token::Operator(op));
+            }
+            ')' => {
+                let op = Operator::CloseParen;
+                input_queue.push(Token::Operator(op));
+            }
+            '^' => {
+                let op = Operator::Power;
+                input_queue.push(Token::Operator(op));
+            }
+            '√' => {
+                let op = Operator::Root;
+                input_queue.push(Token::Operator(op));
+            }
+            '!' => {
+                let op = Operator::Factorial;
+                input_queue.push(Token::Operator(op));
+                // We implicitly add a second operand so that the factorial can be evaluated
+                input_queue.push(Token::Operand(1.));
+            }
+            '0'..='9' | ',' | '.' => {
+                // If the character is a comma, replace it with a decimal point
+                let character = if c == ',' { '.' } else { c };
+                // Accumulate digit and decimal point characters into current_number
+                current_number.push(character);
+                // Check next character to decide if we should continue accumulating or process the number
+                if let Some(&next_char) = input_chars.peek() {
+                    if !next_char.is_digit(10) && next_char != ',' && next_char != '.' {
+                        process_current_number(&mut current_number, &mut input_queue)?;
+                    }
+                } else {
+                    // If this is the last character, ensure the number is processed
+                    process_current_number(&mut current_number, &mut input_queue)?;
+                }
+            }
+            _ => return Err(format!("Invalid character in input: {}", c)),
+        }
+    }
+
+    input_queue.push(Token::Operator(Operator::EndOfInput));
+    Ok(input_queue)
+}
+
 // Function to convert an infix expression to postfix notation
-fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
+fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
     // We define the precedence table as a 2D array
     let precedence_table: Vec<Vec<char>> = vec![
         //    *    /    %    +    -    (    )    $    i    ^    √    !
@@ -156,80 +228,12 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
         vec!['>', '>', '>', '>', '>', 'c', 'c', '>', '<', '>', '>', '>'], // !
     ];
 
-    let mut Input_queue: Vec<Token> = Vec::new();
-    let mut Output_queue: Vec<Token> = Vec::new();
+    let mut input_queue = input_queue;
+    input_queue.reverse();
+    let mut output_queue: Vec<Token> = Vec::new();
     let mut stack: Vec<Token> = vec![Token::Operator(Operator::EndOfInput)];
-    let mut current_number = String::new();
 
-    let mut input_chars = input.chars().peekable();
-
-    while let Some(c) = input_chars.next() {
-        match c {
-            '+' => {
-                let op = Operator::Plus;
-                Input_queue.push(Token::Operator(op));
-            }
-            '-' => {
-                let op = Operator::Minus;
-                Input_queue.push(Token::Operator(op));
-            }
-            '*' => {
-                let op = Operator::Multiply;
-                Input_queue.push(Token::Operator(op));
-            }
-            '/' => {
-                let op = Operator::Divide;
-                Input_queue.push(Token::Operator(op));
-            }
-            '%' => {
-                let op = Operator::Percent;
-                Input_queue.push(Token::Operator(op));
-            }
-            '(' => {
-                let op = Operator::OpenParen;
-                Input_queue.push(Token::Operator(op));
-            }
-            ')' => {
-                let op = Operator::CloseParen;
-                Input_queue.push(Token::Operator(op));
-            }
-            '^' => {
-                let op = Operator::Power;
-                Input_queue.push(Token::Operator(op));
-            }
-            '√' => {
-                let op = Operator::Root;
-                Input_queue.push(Token::Operator(op));
-            }
-            '!' => {
-                let op = Operator::Factorial;
-                Input_queue.push(Token::Operator(op));
-                // We implicitly add a second operand so that the factorial can be evaluated
-                Input_queue.push(Token::Operand(1.));
-            }
-            '0'..='9' | ',' | '.' => {
-                // If the character is a comma, replace it with a decimal point
-                let character = if c == ',' { '.' } else { c };
-                // Accumulate digit and decimal point characters into current_number
-                current_number.push(character);
-                // Check next character to decide if we should continue accumulating or process the number
-                if let Some(&next_char) = input_chars.peek() {
-                    if !next_char.is_digit(10) && next_char != ',' && next_char != '.' {
-                        process_current_number(&mut current_number, &mut Input_queue)?;
-                    }
-                } else {
-                    // If this is the last character, ensure the number is processed
-                    process_current_number(&mut current_number, &mut Input_queue)?;
-                }
-            }
-            _ => return Err(format!("Invalid character in input: {}", c)),
-        }
-    }
-
-    Input_queue.push(Token::Operator(Operator::EndOfInput));
-    Input_queue.reverse();
-
-    while let Some(token) = Input_queue.last().cloned() {
+    while let Some(token) = input_queue.last().cloned() {
         println!("Current stack: {:?}", stack);
 
         // Pop top of vector stack
@@ -250,24 +254,24 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
             '<' => {
                 // If input operator has lower precedence, push it onto the stack
                 println!("Pushing top of Input_queue to stack");
-                let token_to_push_to_stack = Input_queue.pop().unwrap();
+                let token_to_push_to_stack = input_queue.pop().unwrap();
                 stack.push(token_to_push_to_stack);
             }
             '>' => {
                 // If input operator has higher precedence, pop operator from stack onto the Output_queue
                 println!("Popping token from stack, pushing it to the output queue.");
                 let token_to_push_to_queue = stack.pop().expect("Expected token on the stack");
-                Output_queue.push(token_to_push_to_queue);
+                output_queue.push(token_to_push_to_queue);
             }
             '=' => {
                 // We pop from stack and Input_queue
                 stack.pop().expect("Expected token '(' on the stack");
-                Input_queue.pop().expect("Expected ')' on the stack");
+                input_queue.pop().expect("Expected ')' on the stack");
             }
             's' => {
                 // Special case where we matched $ with $ we end here!
                 println!("End of input and end of precedence stack");
-                return Ok(Output_queue);
+                return Ok(output_queue);
             }
             'c' => {
                 // Error
@@ -281,10 +285,12 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
         }
     }
 
-    Ok(Output_queue)
+    Ok(output_queue)
 }
 
 pub fn parse(input: &str) -> Result<String, String> {
-    let postfix_result = to_postfix(input)?;
-    Ok(evaluate_expression(postfix_result)?.to_string())
+    let tokens = tokenize(input)?;
+    let postfix_result = to_postfix(tokens)?;
+    let result = evaluate_expression(postfix_result)?;
+    Ok(result.to_string())
 }
