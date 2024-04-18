@@ -276,12 +276,10 @@ fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
             }
             'c' => {
                 // Error
-                println!("Conflict in precedence");
-                std::process::exit(1);
+                return Err("Invalid expression".to_string());
             }
             _ => {
-                println!("Unexpected precedence value");
-                std::process::exit(1);
+                return Err("Invalid expression".to_string());
             }
         }
     }
@@ -294,4 +292,390 @@ pub fn parse(input: &str) -> Result<f64, String> {
     let postfix_result = to_postfix(tokens)?;
     let result = evaluate_expression(postfix_result)?;
     Ok(result)
+}
+
+#[cfg(test)]
+mod tokenize_tests {
+    use super::{tokenize, Token, Operator};
+
+    fn token_eoi() -> Token { Token::Operator(Operator::EndOfInput) }
+
+    #[test]
+    fn single_number() {
+        assert_eq!(
+            Ok(vec![Token::Operand(1.), token_eoi()]),
+            tokenize("1")
+        );
+    }
+
+    #[test]
+    fn number_with_decimal() {
+        assert_eq!(
+            Ok(vec![Token::Operand(1.5), token_eoi()]),
+            tokenize("1.5")
+        );
+    }
+
+    #[test]
+    fn number_with_comma() {
+        assert_eq!(
+            Ok(vec![Token::Operand(1.5), token_eoi()]),
+            tokenize("1,5")
+        );
+    }
+
+    #[test]
+    fn large_composite_equation() {
+        assert_eq!(
+            Ok(vec![
+                Token::Operator(Operator::OpenParen),
+                Token::Operand(3.),
+                Token::Operator(Operator::Minus),
+                Token::Operand(1.),
+                Token::Operator(Operator::CloseParen),
+                Token::Operator(Operator::Multiply),
+                Token::Operand(2.),
+                Token::Operator(Operator::Plus),
+                Token::Operator(Operator::OpenParen),
+                Token::Operand(3.),
+                Token::Operator(Operator::Factorial),
+                Token::Operand(1.), // Implicit operand for factorial
+                Token::Operator(Operator::CloseParen),
+                Token::Operator(Operator::Minus),
+                Token::Operand(5.),
+                Token::Operator(Operator::Root),
+                Token::Operator(Operator::OpenParen),
+                Token::Operand(8.),
+                Token::Operator(Operator::Power),
+                Token::Operand(5.),
+                Token::Operator(Operator::CloseParen),
+                token_eoi()
+            ]),
+            tokenize("(3-1)*2+(3!)-5√(8^5)"),
+        );
+    }
+
+    #[test]
+    fn factorial() {
+        assert_eq!(
+            Ok(vec![
+                Token::Operand(5.),
+                Token::Operator(Operator::Factorial),
+                Token::Operand(1.), // Implicit operand for factorial
+                token_eoi(),
+            ]),
+            tokenize("5!")
+        );
+    }
+
+    // These are invalid operations
+    #[test]
+    fn with_multiple_decimals() {
+        assert_eq!(
+            Err("Failed to parse number".to_string()),
+            tokenize("1.5.5")
+        );
+    }
+
+    #[test]
+    fn invalid_character() {
+        assert_eq!(
+            Err("Invalid character in input: $".to_string()),
+            tokenize("1$")
+        );
+    }
+}
+
+#[cfg(test)]
+mod postfix_tests {
+    use super::{to_postfix, Token, Operator};
+
+    fn token_eoi() -> Token { Token::Operator(Operator::EndOfInput) }
+
+    #[test]
+    fn single_number() {
+        assert_eq!(
+            Ok(vec![Token::Operand(1.)]),
+            to_postfix(vec![Token::Operand(1.), token_eoi()])
+        );
+    }
+
+    #[test]
+    fn simple_addition() {
+        assert_eq!(
+            Ok(vec![Token::Operand(1.), Token::Operand(2.), Token::Operator(Operator::Plus)]),
+            to_postfix(vec![Token::Operand(1.), Token::Operator(Operator::Plus), Token::Operand(2.), token_eoi()])
+        );
+    }
+
+    #[test]
+    fn large_composite_equation() {
+        // (3-1)*2+(3!)-5√(8^5)
+        assert_eq!(
+            Ok(vec![
+                Token::Operand(3.),
+                Token::Operand(1.),
+                Token::Operator(Operator::Minus),
+                Token::Operand(2.),
+                Token::Operator(Operator::Multiply),
+                Token::Operand(3.),
+                Token::Operand(1.), // Implicit operand for factorial
+                Token::Operator(Operator::Factorial),
+                Token::Operator(Operator::Plus),
+                Token::Operand(5.),
+                Token::Operand(8.),
+                Token::Operand(5.),
+                Token::Operator(Operator::Power),
+                Token::Operator(Operator::Root),
+                Token::Operator(Operator::Minus),
+            ]),
+            to_postfix(vec![
+                Token::Operator(Operator::OpenParen),
+                Token::Operand(3.),
+                Token::Operator(Operator::Minus),
+                Token::Operand(1.),
+                Token::Operator(Operator::CloseParen),
+                Token::Operator(Operator::Multiply),
+                Token::Operand(2.),
+                Token::Operator(Operator::Plus),
+                Token::Operator(Operator::OpenParen),
+                Token::Operand(3.),
+                Token::Operator(Operator::Factorial),
+                Token::Operand(1.), // Implicit operand for factorial
+                Token::Operator(Operator::CloseParen),
+                Token::Operator(Operator::Minus),
+                Token::Operand(5.),
+                Token::Operator(Operator::Root),
+                Token::Operator(Operator::OpenParen),
+                Token::Operand(8.),
+                Token::Operator(Operator::Power),
+                Token::Operand(5.),
+                Token::Operator(Operator::CloseParen),
+                token_eoi(),
+            ])
+        );
+    }
+
+    // These are invalid operations
+    #[test]
+    fn invalid_expression() {
+        assert_eq!(
+            Err("Invalid expression".to_string()),
+            to_postfix(vec![Token::Operand(1.), Token::Operator(Operator::OpenParen), token_eoi()])
+        );
+    }
+}
+
+#[cfg(test)]
+mod evaluate_tests {
+    use super::{evaluate_expression, Token, Operator};
+
+    #[test]
+    fn add_two_values() {
+        assert_eq!(
+            Ok(2.),
+            evaluate_expression(vec![Token::Operand(1.), Token::Operand(1.), Token::Operator(Operator::Plus)])
+        );
+    }
+
+
+    #[test]
+    fn add_multiple_values() {
+        assert_eq!(
+            Ok(6.),
+            evaluate_expression(vec![
+                Token::Operand(1.),
+                Token::Operand(2.),
+                Token::Operand(3.),
+                Token::Operator(Operator::Plus),
+                Token::Operator(Operator::Plus),
+            ])
+        );
+    }
+
+    #[test]
+    fn large_composite_equation() {
+        assert!((2. - evaluate_expression(vec![
+            Token::Operand(3.),
+            Token::Operand(1.),
+            Token::Operator(Operator::Minus),
+            Token::Operand(2.),
+            Token::Operator(Operator::Multiply),
+            Token::Operand(3.),
+            Token::Operand(1.), // Implicit operand for factorial
+            Token::Operator(Operator::Factorial),
+            Token::Operator(Operator::Plus),
+            Token::Operand(5.),
+            Token::Operand(8.),
+            Token::Operand(5.),
+            Token::Operator(Operator::Power),
+            Token::Operator(Operator::Root),
+            Token::Operator(Operator::Minus),
+        ]).unwrap()).abs() < 0.00000001);
+    }
+
+    // These are invalid operations
+    #[test]
+    fn divide_by_zero() {
+        assert_eq!(
+            Err("Cannot divide by zero".to_string()),
+            evaluate_expression(vec![Token::Operand(1.), Token::Operand(0.), Token::Operator(Operator::Divide)])
+        );
+    }
+
+    #[test]
+    fn invalid_expression() {
+        assert_eq!(
+            Err("Invalid expression".to_string()),
+            evaluate_expression(vec![Token::Operand(1.), Token::Operator(Operator::Plus)])
+        );
+    }
+
+    #[test]
+    fn invalid_operator() {
+        assert_eq!(
+            Err("Invalid expression".to_string()),
+            evaluate_expression(vec![Token::Operand(1.), Token::Operand(1.), Token::Operator(Operator::OpenParen)])
+        );
+    }
+
+    #[test]
+    fn negative_factorial() {
+        assert_eq!(
+            Err("Cannot take factorial of a negative number".to_string()),
+            evaluate_expression(vec![Token::Operand(-1.), Token::Operator(Operator::Factorial)])
+        );
+    }
+
+    #[test]
+    fn negative_sqrt() {
+        assert_eq!(
+            Err("Cannot take the root of a negative number".to_string()),
+            evaluate_expression(vec![Token::Operand(-2.), Token::Operand(16.), Token::Operator(Operator::Root)])
+        );
+    }
+}
+
+#[cfg(test)]
+mod parse_tests {
+    use super::parse;
+
+    #[test]
+    fn add_two_values() {
+        assert_eq!(
+            Ok(2.),
+            parse("1+1")
+        );
+    }
+
+    #[test]
+    fn subtract_two_values() {
+        assert_eq!(
+            Ok(0.),
+            parse("1-1")
+        );
+    }
+
+    #[test]
+    fn multiply_two_values() {
+        assert_eq!(
+            Ok(8.),
+            parse("4*2")
+        );
+    }
+
+    #[test]
+    fn divide_two_values() {
+        assert_eq!(
+            Ok(2.),
+            parse("4/2")
+        );
+    }
+
+    #[test]
+    fn power_of_two_values() {
+        assert_eq!(
+            Ok(16.),
+            parse("4^2")
+        );
+    }
+
+    #[test]
+    fn sqrt() {
+        assert_eq!(
+            Ok(4.),
+            parse("2√16")
+        );
+    }
+
+    #[test]
+    fn factorial() {
+        assert_eq!(
+            Ok(120.),
+            parse("5!")
+        );
+    }
+
+    #[test]
+    fn add_multiple_values() {
+        assert_eq!(
+            Ok(6.),
+            parse("1+2+3")
+        );
+    }
+
+    #[test]
+    fn large_composite_equation() {
+        assert!((2. - parse("(3-1)*2+(3!)-5√(8^5)").unwrap()).abs() < 0.00000001);
+    }
+
+    #[test]
+    fn zero_factorial() {
+        assert_eq!(
+            Ok(1.),
+            parse("0!")
+        );
+    }
+
+
+    // These are invalid operations
+    #[test]
+    fn invalid_negative_factorial() {
+        assert_eq!(
+            Err("Cannot take factorial of a negative number".to_string()),
+            parse("-1!")
+        );
+    }
+
+    #[test]
+    fn divide_by_zero() {
+        assert_eq!(
+            Err("Cannot divide by zero".to_string()),
+            parse("1/0")
+        );
+    }
+
+    #[test]
+    fn invalid_operation() {
+        assert_eq!(
+            Err("Invalid expression".to_string()),
+            parse("(1+")
+        );
+    }
+
+    #[test]
+    fn missing_paren() {
+        assert_eq!(
+            Err("Invalid expression".to_string()),
+            parse("(1+2")
+        );
+    }
+
+    #[test]
+    fn negative_sqrt() {
+        assert_eq!(
+            Err("Cannot take the root of a negative number".to_string()),
+            parse("-16√2")
+        );
+    }
 }
