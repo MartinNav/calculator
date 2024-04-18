@@ -205,6 +205,8 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
             '!' => {
                 let op = Operator::Factorial;
                 Input_queue.push(Token::Operator(op));
+                // We implicitly add a second operand so that the factorial can be evaluated
+                Input_queue.push(Token::Operand(1.));
             }
             '0'..='9' | ',' | '.' => {
                 // If the character is a comma, replace it with a decimal point
