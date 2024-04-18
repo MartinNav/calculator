@@ -88,13 +88,13 @@ fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
                         left.powf(right)
                     }
                     Operator::Root => {
-                        if right.abs() < f64::EPSILON {
+                        if left.abs() < f64::EPSILON {
                             return Err("Cannot take the 0th root".to_string());
                         }
-                        if left < 0. {
+                        if right < 0. {
                             return Err("Cannot take the root of a negative number".to_string());
                         }
-                        left.powf(1. / right)
+                        right.powf(1. / left)
                     }
                     Operator::Factorial => {
                         if left < 0. {
