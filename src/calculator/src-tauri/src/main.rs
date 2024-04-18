@@ -5,7 +5,7 @@ use math_lib;
 fn calculate(equation: String) -> Result<String, String> {
     let equation = equation
         .replace("π", "3.14159265358979323846264338327950288");
-    math_lib::parse(equation.as_str())
+    Ok(math_lib::parse(equation.as_str())?.to_string())
 }
 
 fn main() {

@@ -47,6 +47,7 @@ impl Token {
         }
     }
 }
+
 fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
     let mut stack: Vec<f64> = Vec::new();
 
@@ -239,7 +240,7 @@ fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
         // Pop top of vector stack
         let top = stack.last().cloned();
 
-        let index_first= match top {
+        let index_first = match top {
             Some(token) => token.precedence_index(),
             None => {
                 println!("Empty stack");
@@ -288,9 +289,9 @@ fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
     Ok(output_queue)
 }
 
-pub fn parse(input: &str) -> Result<String, String> {
+pub fn parse(input: &str) -> Result<f64, String> {
     let tokens = tokenize(input)?;
     let postfix_result = to_postfix(tokens)?;
     let result = evaluate_expression(postfix_result)?;
-    Ok(result.to_string())
+    Ok(result)
 }
