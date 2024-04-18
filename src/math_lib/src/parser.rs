@@ -14,6 +14,7 @@ pub enum Operator {
     Minus,      // Represents '-'
     Multiply,   // Represents '*'
     Divide,     // Represents '/'
+    Percent,    // Represents '%'
     Power,      // Represents '^'
     Root,       // Represents '√'
     Factorial,  // Represents '!'
@@ -34,19 +35,19 @@ impl Token {
         match self {
             Token::Operator(Operator::Multiply) => 0,
             Token::Operator(Operator::Divide) => 1,
-            Token::Operator(Operator::Plus) => 2,
-            Token::Operator(Operator::Minus) => 3,
-            Token::Operator(Operator::OpenParen) => 4,
-            Token::Operator(Operator::CloseParen) => 5,
-            Token::Operator(Operator::EndOfInput) => 6,
-            Token::Operand(_) => 7,
-            Token::Operator(Operator::Power) => 8,
-            Token::Operator(Operator::Root) => 9,
-            Token::Operator(Operator::Factorial) => 10,
+            Token::Operator(Operator::Percent) => 2,
+            Token::Operator(Operator::Plus) => 3,
+            Token::Operator(Operator::Minus) => 4,
+            Token::Operator(Operator::OpenParen) => 5,
+            Token::Operator(Operator::CloseParen) => 6,
+            Token::Operator(Operator::EndOfInput) => 7,
+            Token::Operand(_) => 8,
+            Token::Operator(Operator::Power) => 9,
+            Token::Operator(Operator::Root) => 10,
+            Token::Operator(Operator::Factorial) => 11,
         }
     }
 }
-
 fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
     let mut stack: Vec<f64> = Vec::new();
 
@@ -77,6 +78,12 @@ fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
                             return Err("Cannot divide by zero".to_string());
                         }
                         left / right
+                    }
+                    Operator::Percent => {
+                        if right.abs() < f64::EPSILON {
+                            return Err("Cannot take the percentage of zero".to_string());
+                        }
+                        left / right * 100.0
                     }
                     Operator::Power => {
                         left.powf(right)
@@ -135,18 +142,19 @@ fn process_current_number(
 fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
     // We define the precedence table as a 2D array
     let precedence_table: Vec<Vec<char>> = vec![
-        // *    /    +    -    (    )    $    i    ^    √    !
-        vec!['>', '>', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // *
-        vec!['>', '>', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // /
-        vec!['<', '<', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // +
-        vec!['<', '<', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // -
-        vec!['<', '<', '<', '<', '<', '=', 'c', '<', '<', '<', '<'], // (
-        vec!['>', '>', '>', '>', 'c', '>', '>', 'c', '>', '>', '>'], // )
-        vec!['<', '<', '<', '<', '<', 'c', 's', '<', '<', '<', '<'], // $
-        vec!['>', '>', '>', '>', 'c', '>', '>', 'c', '>', '>', '>'], // i
-        vec!['>', '>', '>', '>', '<', '>', '>', '<', '>', '>', '<'], // ^
-        vec!['>', '>', '>', '>', '<', '>', '>', '<', '>', '>', '<'], // √
-        vec!['>', '>', '>', '>', 'c', 'c', '>', '<', '>', '>', '>'], // !
+        //    *    /    %    +    -    (    )    $    i    ^    √    !
+        vec!['>', '>', '>', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // *
+        vec!['>', '>', '>', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // /
+        vec!['>', '>', '>', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // %
+        vec!['<', '<', '<', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // +
+        vec!['<', '<', '<', '>', '>', '<', '>', '>', '<', '<', '<', '<'], // -
+        vec!['<', '<', '<', '<', '<', '<', '=', 'c', '<', '<', '<', '<'], // (
+        vec!['>', '>', '>', '>', '>', 'c', '>', '>', 'c', '>', '>', '>'], // )
+        vec!['<', '<', '<', '<', '<', '<', 'c', 's', '<', '<', '<', '<'], // $
+        vec!['>', '>', '>', '>', '>', 'c', '>', '>', 'c', '>', '>', '>'], // i
+        vec!['>', '>', '>', '>', '>', '<', '>', '>', '<', '>', '>', '<'], // ^
+        vec!['>', '>', '>', '>', '>', '<', '>', '>', '<', '>', '>', '<'], // √
+        vec!['>', '>', '>', '>', '>', 'c', 'c', '>', '<', '>', '>', '>'], // !
     ];
 
     let mut Input_queue: Vec<Token> = Vec::new();
@@ -172,6 +180,10 @@ fn to_postfix(input: &str) -> Result<Vec<Token>, String> {
             }
             '/' => {
                 let op = Operator::Divide;
+                Input_queue.push(Token::Operator(op));
+            }
+            '%' => {
+                let op = Operator::Percent;
                 Input_queue.push(Token::Operator(op));
             }
             '(' => {
