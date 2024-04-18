@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculator</title>
-<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="styles.css">
     <script type="module" src="main.js" defer>
-      
+
     </script>
 </head>
 <body>
 <div class="calculator">
     <input type="text" class="display" id="display" disabled>
     <div class="buttons">
-        <button class="operator" onclick="appendToDisplay('^')">x<sup>y</sup></button>    
+        <button class="operator" onclick="appendToDisplay('^')">x<sup>y</sup></button>
         <button class="operator" onclick="appendToDisplay('√')">√<sub>n</sub></button>
         <button class="operator" onclick="appendToDisplay('!')">!</button>
         <button class="special" onclick="clearDisplay()">C</button>
@@ -24,7 +24,7 @@
         <button onclick="appendToDisplay('9')">9</button>
         <button class="operator" onclick="appendToDisplay('π')">π</button>
         <button class="operator" onclick="appendToDisplay('%')">%</button>
-        
+
         <button onclick="appendToDisplay('4')">4</button>
         <button onclick="appendToDisplay('5')">5</button>
         <button onclick="appendToDisplay('6')">6</button>
@@ -35,47 +35,53 @@
         <button onclick="appendToDisplay('2')">2</button>
         <button onclick="appendToDisplay('3')">3</button>
         <button class="operator" onclick="appendToDisplay('*')">*</button>
-        <button class="operator" onclick="appendToDisplay('/')">/</button>        
-        
+        <button class="operator" onclick="appendToDisplay('/')">/</button>
+
         <button onclick="appendToDisplay('0')">0</button>
         <button onclick="appendToDisplay(',')">,</button>
         <button class="operator" onclick="appendToDisplay('(')">(</button>
         <button class="operator" onclick="appendToDisplay(')')">)</button>
-        
-        <button class="equals" id="equals" >=</button>
+
+        <button class="equals" id="equals">=</button>
     </div>
 </div>
 
 <script>
+    let displaying_error = false;
+    let display = document.getElementById("display");
+
     function appendToDisplay(value) {
-      var display = document.getElementById('display');
-      if (display.value === "undefined") //|| display.value.contains("error"))
-      {
-        display.value = "";
-      }
-      display.value += value;
-      adjustFontSize(display);
+        if (displaying_error === true || display.value === "undefined") //|| display.value.contains("error"))
+        {
+            clearDisplay();
+        }
+
+        display.value += value;
+        adjustFontSize();
     }
 
     function clearDisplay() {
-        var display = document.getElementById('display');
         display.value = '';
-        adjustFontSize(display);
+        displaying_error = false;
+        adjustFontSize();
     }
 
     function removeLast() {
-        var display = document.getElementById('display');
-        var displayValue = display.value;
+        if (displaying_error === true)
+        {
+            clearDisplay();
+        }
+
+        let displayValue = display.value;
         display.value = displayValue.substring(0, displayValue.length - 1);
-        adjustFontSize(display);
+        adjustFontSize();
     }
 
-    function adjustFontSize(element) {
-        var fontSize = 50; // Initial font size
-        var maxLength = 32; // Maximum characters before shrinking font size
-        var displayLength = element.value.length;
-            fontSize = Math.max(18, 28 - (displayLength - maxLength)); 
-        element.style.fontSize = fontSize + 'px';
+    function adjustFontSize() {
+        let maxLength = 32; // Maximum characters before shrinking font size
+        let displayLength = display.value.length;
+        let fontSize = Math.max(18, 28 - (displayLength - maxLength));
+        display.style.fontSize = fontSize + 'px';
     }
 </script>
 
