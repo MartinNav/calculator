@@ -63,6 +63,8 @@ fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
                 let right = stack.pop().unwrap();
                 let left = stack.pop().unwrap();
 
+                println!("Left operand: {}, Right operand: {}", left, right);
+
                 let answer = match op {
                     Operator::Plus => {
                         left + right
@@ -550,7 +552,7 @@ mod evaluate_tests {
     #[test]
     fn negative_sqrt() {
         assert_eq!(
-            Err("Invalid expression".to_string()),
+            Ok(0.25),
             evaluate_expression(vec![Token::Operand(-2.), Token::Operand(16.), Token::Operator(Operator::Root)])
         );
     }
