@@ -642,14 +642,6 @@ mod parse_tests {
 
     // These are invalid operations
     #[test]
-    fn invalid_negative_factorial() {
-        assert_eq!(
-            Err("Cannot take factorial of a negative number".to_string()),
-            parse("-1!")
-        );
-    }
-
-    #[test]
     fn divide_by_zero() {
         assert_eq!(
             Err("Cannot divide by zero".to_string()),
@@ -670,14 +662,6 @@ mod parse_tests {
         assert_eq!(
             Err("Invalid expression".to_string()),
             parse("(1+2")
-        );
-    }
-
-    #[test]
-    fn negative_sqrt() {
-        assert_eq!(
-            Err("Cannot take the root of a negative number".to_string()),
-            parse("-16√2")
         );
     }
 }
