@@ -57,3 +57,21 @@ body {
   background-color: #929291;
   color: #FFFEF9;
 }
+.helpbtn{
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  text-decoration: none;
+  color: white;
+  background-color:#99AAFF;
+  padding: 8px 13px;
+  border-radius: 25px;
+  opacity: 0.5;
+  transition-duration:0.5s;
+
+}
+.helpbtn:hover{
+  opacity: 1;
+  text-shadow: 1px 1px gray;
+  box-shadow: 2px 2px gray;
+}
