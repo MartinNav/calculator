@@ -480,6 +480,13 @@ mod evaluate_tests {
         );
     }
 
+    #[test]
+    fn negative_sqrt() {
+        assert_eq!(
+            Ok(0.25),
+            evaluate_expression(vec![Token::Operand(-2.), Token::Operand(16.), Token::Operator(Operator::Root)])
+        );
+    }
 
     #[test]
     fn add_multiple_values() {
@@ -549,13 +556,6 @@ mod evaluate_tests {
         );
     }
 
-    #[test]
-    fn negative_sqrt() {
-        assert_eq!(
-            Ok(0.25),
-            evaluate_expression(vec![Token::Operand(-2.), Token::Operand(16.), Token::Operator(Operator::Root)])
-        );
-    }
 }
 
 #[cfg(test)]
