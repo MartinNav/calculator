@@ -56,63 +56,72 @@ fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
             Token::Operand(num) => {
                 stack.push(num);
             }
-            Token::Operator(op) => {
-                if stack.len() < 2 {
-                    return Err("Invalid expression".to_string());
+            Token::Operator(op) =>
+
+            // Handle unary minus separately when there is only one operand available
+            match op {
+                Operator::Minus if stack.len() == 1 => {
+                    let num = stack.pop().unwrap();
+                    stack.push(-num);
+                },
+                
+                _ => {
+                    if stack.len() < 2 {
+                        return Err("Invalid expression".to_string());
+                    }
+                    let right = stack.pop().unwrap();
+                    let left = stack.pop().unwrap();
+
+                    println!("Left operand: {}, Right operand: {}", left, right);
+
+                    let answer = match op {
+                        Operator::Plus => {
+                            left + right
+                        }
+                        Operator::Minus => {
+                            left - right
+                        }
+                        Operator::Multiply => {
+                            left * right
+                        }
+                        Operator::Divide => {
+                            if right.abs() < f64::EPSILON {
+                                return Err("Cannot divide by zero".to_string());
+                            }
+                            left / right
+                        }
+                        Operator::Percent => {
+                            if right.abs() < f64::EPSILON {
+                                return Err("Cannot take the percentage of zero".to_string());
+                            }
+                            left / right * 100.0
+                        }
+                        Operator::Power => {
+                            left.powf(right)
+                        }
+                        Operator::Root => {
+                            if left.abs() < f64::EPSILON {
+                                return Err("Cannot take the 0th root".to_string());
+                            }
+                            if right < 0. {
+                                return Err("Cannot take the root of a negative number".to_string());
+                            }
+                            right.powf(1. / left)
+                        }
+                        Operator::Factorial => {
+                            if left < 0. {
+                                return Err("Cannot take factorial of a negative number".to_string());
+                            }
+                            let mut res = 1.0;
+                            (2..=(left as i64)).for_each(|i| res *= i as f64);
+                            res
+                        }
+                        _ => {
+                            return Err(format!("{op:?} is an invalid operator"));
+                        }
+                    };
+                    stack.push(answer);
                 }
-                let right = stack.pop().unwrap();
-                let left = stack.pop().unwrap();
-
-                println!("Left operand: {}, Right operand: {}", left, right);
-
-                let answer = match op {
-                    Operator::Plus => {
-                        left + right
-                    }
-                    Operator::Minus => {
-                        left - right
-                    }
-                    Operator::Multiply => {
-                        left * right
-                    }
-                    Operator::Divide => {
-                        if right.abs() < f64::EPSILON {
-                            return Err("Cannot divide by zero".to_string());
-                        }
-                        left / right
-                    }
-                    Operator::Percent => {
-                        if right.abs() < f64::EPSILON {
-                            return Err("Cannot take the percentage of zero".to_string());
-                        }
-                        left / right * 100.0
-                    }
-                    Operator::Power => {
-                        left.powf(right)
-                    }
-                    Operator::Root => {
-                        if left.abs() < f64::EPSILON {
-                            return Err("Cannot take the 0th root".to_string());
-                        }
-                        if right < 0. {
-                            return Err("Cannot take the root of a negative number".to_string());
-                        }
-                        right.powf(1. / left)
-                    }
-                    Operator::Factorial => {
-                        if left < 0. {
-                            return Err("Cannot take factorial of a negative number".to_string());
-                        }
-                        let mut res = 1.0;
-                        (2..=(left as i64)).for_each(|i| res *= i as f64);
-                        res
-                    }
-                    _ => {
-                        return Err(format!("{op:?} is an invalid operator"));
-                    }
-                };
-
-                stack.push(answer);
             }
         }
     }
@@ -521,6 +530,31 @@ mod evaluate_tests {
             Token::Operator(Operator::Root),
             Token::Operator(Operator::Minus),
         ]).unwrap()).abs() < 0.00000001);
+    }
+
+    #[test]
+    fn negative_of_addition() {
+        assert_eq!(
+            Ok(-7.),
+            evaluate_expression(vec![
+                Token::Operand(4.),
+                Token::Operand(3.),
+                Token::Operator(Operator::Plus),
+                Token::Operator(Operator::Minus)
+            ])
+        );
+    }
+
+        #[test]
+    fn positive_of_addition() {
+        assert_eq!(
+            Ok(7.),
+            evaluate_expression(vec![
+                Token::Operand(4.),
+                Token::Operand(3.),
+                Token::Operator(Operator::Plus)
+            ])
+        );
     }
 
     // These are invalid operations
