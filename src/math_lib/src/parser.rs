@@ -56,11 +56,22 @@ fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
             }
             Token::Operator(op) =>
 
-            // Handle unary minus separately when there is only one operand available
+            
             match op {
+                // EDGE CASES
+                // Handle unary minus separately when there is only one operand available
                 Operator::Minus if stack.len() == 1 => {
                     let num = stack.pop().unwrap();
                     stack.push(-num);
+                },
+
+                Operator::Root if stack.len() == 1 => {
+                    let num = stack.pop().unwrap();
+                    if num < 0. {
+                        return Err("Cannot take the root of a negative number".to_string());
+                    }
+                    let answer = num.powf(1. / 2.);
+                    stack.push(answer);
                 },
                 
                 _ => {
@@ -492,6 +503,17 @@ mod evaluate_tests {
         assert_eq!(
             Ok(0.25),
             evaluate_expression(vec![Token::Operand(-2.), Token::Operand(16.), Token::Operator(Operator::Root)])
+        );
+    }
+
+    #[test]
+    fn square_root_of_16_without_one_operand() {
+        assert_eq!(
+            Ok(4.),
+            evaluate_expression(vec![
+                Token::Operand(16.),
+                Token::Operator(Operator::Root)
+            ])
         );
     }
 
