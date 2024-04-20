@@ -2,10 +2,6 @@
 // Sources: https://www.fit.vutbr.cz/study/courses/IFJ/private/prednesy/Ifj08-en.pdf
 //          https://github.com/RichardGajdosik/VUTFIT_IFJ_2021_Projekt/blob/master/src/expressions.c
 
-//TODO: Better comments
-//TODO: Add support for negative numbers
-//TODO: Bug, "(1+2" sends it to oblivion, todo: exit gracefully instead of exiting whole program
-
 // Operator enum representing possible operators in the expressions
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Operator {
