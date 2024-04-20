@@ -1,23 +1,19 @@
-const { invoke } = window.__TAURI__.tauri;
-
-let display;
+const {invoke} = window.__TAURI__.tauri;
 
 async function calculate() {
-  // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-  console.log("calculate called");
-  display.value = await invoke("calculate", { equation: display.value })
-      .then((result) => `output: ${result}`)
-      .catch((error) => `Error calling parser: ${error}`);
+    display.value = await invoke("calculate", {equation: display.value})
+        .then((result) => result)
+        .catch((error) => {
+            displaying_error = true;
+            return error;
+        });
 
-  console.log("calculate finished");
- adjustFontSize(display);
+    adjustFontSize();
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  display= document.querySelector("#display");
-  document.querySelector("#equals").addEventListener("click", (e) => {
-   // e.preventDefault();
-    calculate();
-  });
+    document.getElementById("equals").addEventListener("click", (_) => {
+        void (calculate());
+    });
 });
 
