@@ -1,6 +1,8 @@
-// Author: Richard Gajdosik <gajdo33@vutbr.cz> 2024 VUT FIT
-// Sources: https://www.fit.vutbr.cz/study/courses/IFJ/private/prednesy/Ifj08-en.pdf
-//          https://github.com/RichardGajdosik/VUTFIT_IFJ_2021_Projekt/blob/master/src/expressions.c
+/* 
+* to_postfix() author: Richard Gajdosik <gajdo33@vutbr.cz> 2024 VUT FIT
+* Sources: https://www.fit.vutbr.cz/study/courses/IFJ/private/prednesy/Ifj08-en.pdf
+*          https://github.com/RichardGajdosik/VUTFIT_IFJ_2021_Projekt/blob/master/src/expressions.c
+*/
 
 // Operator enum representing possible operators in the expressions
 #[derive(Debug, Clone, Copy, PartialEq)]
