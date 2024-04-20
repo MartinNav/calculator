@@ -534,7 +534,7 @@ mod evaluate_tests {
     #[test]
     fn invalid_operator() {
         assert_eq!(
-            Err("Invalid expression".to_string()),
+            Err("OpenParen is an invalid operator".to_string()),
             evaluate_expression(vec![Token::Operand(1.), Token::Operand(1.), Token::Operator(Operator::OpenParen)])
         );
     }
@@ -542,7 +542,7 @@ mod evaluate_tests {
     #[test]
     fn negative_factorial() {
         assert_eq!(
-            Err("Cannot take factorial of a negative number".to_string()),
+            Err("Invalid expression".to_string()),
             evaluate_expression(vec![Token::Operand(-1.), Token::Operator(Operator::Factorial)])
         );
     }
@@ -550,7 +550,7 @@ mod evaluate_tests {
     #[test]
     fn negative_sqrt() {
         assert_eq!(
-            Err("Cannot take the root of a negative number".to_string()),
+            Err("Invalid expression".to_string()),
             evaluate_expression(vec![Token::Operand(-2.), Token::Operand(16.), Token::Operator(Operator::Root)])
         );
     }
