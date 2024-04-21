@@ -11,6 +11,7 @@ release:
 # will generate docs for math_lib
 docs:
 	cargo doc --package math_lib
-# will compile profiling but not run it
 profiling:
+	export CARGO_PROFILE_RELEASE_DEBUG=true
 	cargo build --package profiling
+	cargo flamegraph  --package profiling --bin profiling -o flamegraph_10.svg < profiling/test_case_10.txt
