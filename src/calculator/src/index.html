@@ -9,8 +9,8 @@
       
     </script>
 </head>
-<body>
-    <a class="helpbtn" href="/help.html">?</a>
+<body onload="on_load()">
+    <a class="helpbtn" onclick="preserve()" href="/help.html">?</a>
 <div class="calculator">
     <input type="text" class="display" id="display" disabled>
     <div class="buttons">
@@ -112,7 +112,17 @@
           break;
         }
       }
+      adjustFontSize(display);
     });
+    function preserve(){
+      document.cookie=""+encodeURI(document.getElementById('display').value)+"";
+    }
+    function on_load(){
+
+      var display = document.getElementById('display');
+      display.value = decodeURI(document.cookie);
+      adjustFontSize(display);
+    }
 </script>
 
 </body>
