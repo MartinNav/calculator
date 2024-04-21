@@ -229,6 +229,7 @@ dependencies = [
 name = "calculator"
 version = "0.0.0"
 dependencies = [
+ "math_lib",
  "serde",
  "serde_json",
  "tauri",
