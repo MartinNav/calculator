@@ -60,6 +60,7 @@ pub fn prepare_to_parse(input: String) -> String {
     expression
 }
 
+/// Reads the input from the standard input, prepares it to be used by the parser, and calculates the standard deviation.
 fn main() -> Result<(), String> {
     let mut input = String::new();
     let read = stdin().read_to_string(&mut input).unwrap_or(0);

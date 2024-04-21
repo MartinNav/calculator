@@ -1,6 +1,21 @@
 use std::io::Write;
 use rand::Rng;
 
+/// Generates a test case file with random numbers for profiler
+///
+/// # Arguments
+///
+/// * `number_count` - The number of random numbers to generate
+/// * `min_value` - The minimum value of the random numbers
+/// * `max_value` - The maximum value of the random numbers
+///
+/// If one of the range values is a floating point number, the generated numbers will also be floating point numbers.
+///
+/// # Example
+///
+/// ```shell
+/// cargo run --bin generator 1000000 0 100
+/// ```
 fn main() {
     let args = std::env::args().collect::<Vec<_>>();
     if args.len() != 4 {
