@@ -9,8 +9,8 @@
 
     </script>
 </head>
-<body>
-    <a class="helpbtn" href="/help.html">?</a>
+<body onload="on_load()">
+    <a class="helpbtn" onclick="preserve()" href="/help.html">?</a>
 <div class="calculator">
     <input type="text" class="display" id="display" disabled>
     <div class="buttons">
@@ -83,6 +83,66 @@
         let displayLength = display.value.length;
         let fontSize = Math.max(18, 28 - (displayLength - maxLength));
         display.style.fontSize = fontSize + 'px';
+    }
+    document.addEventListener("keydown",(e)=>{
+      let key = e.key;
+      var display = document.getElementById('display');
+
+      let res = parseInt(key)
+      console.log(res);
+      if (!isNaN(res)){
+        display.value+=key;
+      }
+      else{
+        switch(key){
+          case "+":
+          display.value+="+";
+          break;
+          case "-":
+          display.value+="-";
+          break;
+          case "/":
+          display.value+="/";
+          break;
+          case "*":
+          display.value+="*";
+          break;
+          case "!":
+          display.value+="!";
+          break;
+          case "^":
+          display.value+="^";
+          break;
+          case ".":
+          display.value+=",";
+          break;
+          case ",":
+          display.value+=",";
+          break;
+          case "(":
+          display.value+="(";
+          break;
+          case ")":
+          display.value+=")";
+          break;
+          case "%":
+          display.value+="%";
+          break;
+          case "Backspace":
+          display.value=display.value.slice(0,-1);
+          break;
+        }
+      }
+      adjustFontSize(display);
+    });
+    function preserve(){
+      document.cookie=""+encodeURI(document.getElementById('display').value)+"";
+    }
+    function on_load(){
+
+      var display = document.getElementById('display');
+      display.value = decodeURI(document.cookie);
+      adjustFontSize(display);
     }
 </script>
 
