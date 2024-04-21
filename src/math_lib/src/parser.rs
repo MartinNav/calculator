@@ -1,3 +1,7 @@
+//! # Description
+//! This module provides functions for parsing mathematical expressions.
+
+
 /* 
 * to_postfix() author: Richard Gajdosik <gajdo33@vutbr.cz> 2024 VUT FIT
 * Sources: https://www.fit.vutbr.cz/study/courses/IFJ/private/prednesy/Ifj08-en.pdf
@@ -46,6 +50,33 @@ impl Token {
     }
 }
 
+/// Evaluates a postfix expression.
+/// 
+/// This function takes a vector of Tokens in postfix order and evaluates the expression
+/// to produce a single numerical result. It handles binary operations like addition,
+/// subtraction, multiplication, and division, as well as unary operations and functions
+/// like factorial and square root.
+/// 
+/// # Arguments
+/// 
+/// * `tokens` - A vector of Tokens in postfix notation
+/// 
+/// # Returns
+/// A Result containing the evaluated result as f64 or an error string if the expression
+/// contains invalid operations or if an arithmetic error occurs (like division by zero).
+///
+/// # Examples
+/// ```
+/// let postfix = vec![
+///     Token::Operand(3.),
+///     Token::Operand(1.),
+///     Token::Operator(Operator::Plus),
+///     Token::Operand(2.),
+///     Token::Operator(Operator::Multiply)
+/// ];
+/// let result = evaluate_expression(postfix).unwrap();
+/// assert_eq!(result, 8.);
+/// ```
 fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
     let mut stack: Vec<f64> = Vec::new();
 
@@ -158,6 +189,38 @@ fn process_current_number(
     Ok(())
 }
 
+/// Tokenizes a string input into a vector of Tokens.
+/// 
+/// This function scans a string representing a mathematical expression and converts
+/// it into a sequence of tokens. Each token represents either an operator or an operand.
+/// The function handles numbers, operators, and parentheses, converting them into
+/// their respective Token representations.
+/// 
+/// # Arguments
+/// 
+/// * `input` - A string slice representing the mathematical expression to tokenize
+/// 
+/// # Returns
+/// A Result containing a vector of Tokens if successful, or an error message if the input
+/// contains invalid characters or improperly formatted numbers.
+/// # Examples
+/// ```
+/// let input = "3 + 4 * 2 / (1 - 5)";
+/// let tokens = tokenize(input).unwrap();
+/// assert_eq!(tokens, vec![
+///     Token::Operand(3.),
+///     Token::Operator(Operator::Plus),
+///     Token::Operand(4.),
+///     Token::Operator(Operator::Multiply),
+///     Token::Operand(2.),
+///     Token::Operator(Operator::Divide),
+///     Token::Operator(Operator::OpenParen),
+///     Token::Operand(1.),
+///     Token::Operator(Operator::Minus),
+///     Token::Operand(5.),
+///     Token::Operator(Operator::CloseParen)
+/// ]);
+/// ```
 fn tokenize(input: &str) -> Result<Vec<Token>, String> {
     let mut input_queue: Vec<Token> = Vec::new();
     let mut current_number = String::new();
@@ -230,7 +293,38 @@ fn tokenize(input: &str) -> Result<Vec<Token>, String> {
     Ok(input_queue)
 }
 
-// Function to convert an infix expression to postfix notation
+/// Converts a given infix expression to postfix notation.
+/// 
+/// The function uses a precedence table to resolve the order of operations
+/// and manage operator precedence. This ensures that the resulting postfix
+/// expression is correctly ordered for subsequent evaluation.
+/// 
+/// # Arguments
+/// 
+/// * `input_queue` - A vector of Tokens representing the infix expression
+/// 
+/// # Returns
+/// A Result containing the postfix notation as a vector of Tokens or an error message
+/// if the expression is invalid.
+/// 
+/// # Examples
+/// ```
+/// let infix = vec![
+///     Token::Operand(3.),
+///     Token::Operator(Operator::Minus),
+///     Token::Operand(1.),
+///     Token::Operator(Operator::Multiply),
+///     Token::Operand(2.)
+/// ];
+/// let postfix = to_postfix(infix).unwrap();
+/// assert_eq!(postfix, vec![
+///     Token::Operand(3.),
+///     Token::Operand(1.),
+///     Token::Operator(Operator::Minus),
+///     Token::Operand(2.),
+///     Token::Operator(Operator::Multiply)
+/// ]);
+/// ```
 fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
     // We define the precedence table as a 2D array
     let precedence_table: Vec<Vec<char>> = vec![
@@ -307,6 +401,24 @@ fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
     Ok(output_queue)
 }
 
+/// Parses a string expression and evaluates it to a number.
+/// 
+/// This function is the high-level interface to the expression parsing system. It first tokenizes
+/// the input string, converts the tokens from infix to postfix notation, and then evaluates the
+/// resulting postfix expression.
+/// 
+/// # Arguments
+/// 
+/// * `input` - The string slice to parse and evaluate
+/// 
+/// # Returns
+/// A Result containing the numerical result of the expression or an error message if the
+/// expression is invalid or an error occurs during evaluation.
+/// # Examples
+/// ```
+/// let result = parse("3 + 4 * 2 / (1 - 5)^2").unwrap();
+/// assert_eq!(result, 3.5);
+/// ```
 pub fn parse(input: &str) -> Result<f64, String> {
     let tokens = tokenize(input)?;
     let postfix_result = to_postfix(tokens)?;
