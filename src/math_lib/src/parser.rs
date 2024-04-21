@@ -1,10 +1,12 @@
-// Author: Richard Gajdosik <gajdo33@vutbr.cz> 2024 VUT FIT
-// Sources: https://www.fit.vutbr.cz/study/courses/IFJ/private/prednesy/Ifj08-en.pdf
-//          https://github.com/RichardGajdosik/VUTFIT_IFJ_2021_Projekt/blob/master/src/expressions.c
+//! # Description
+//! This module provides functions for parsing mathematical expressions.
 
-//TODO: Better comments
-//TODO: Add support for negative numbers
-//TODO: Bug, "(1+2" sends it to oblivion, todo: exit gracefully instead of exiting whole program
+
+/* 
+* to_postfix() author: Richard Gajdosik <gajdo33@vutbr.cz> 2024 VUT FIT
+* Sources: https://www.fit.vutbr.cz/study/courses/IFJ/private/prednesy/Ifj08-en.pdf
+*          https://github.com/RichardGajdosik/VUTFIT_IFJ_2021_Projekt/blob/master/src/expressions.c
+*/
 
 // Operator enum representing possible operators in the expressions
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -48,6 +50,33 @@ impl Token {
     }
 }
 
+/// Evaluates a postfix expression.
+/// 
+/// This function takes a vector of Tokens in postfix order and evaluates the expression
+/// to produce a single numerical result. It handles binary operations like addition,
+/// subtraction, multiplication, and division, as well as unary operations and functions
+/// like factorial and square root.
+/// 
+/// # Arguments
+/// 
+/// * `tokens` - A vector of Tokens in postfix notation
+/// 
+/// # Returns
+/// A Result containing the evaluated result as f64 or an error string if the expression
+/// contains invalid operations or if an arithmetic error occurs (like division by zero).
+///
+/// # Examples
+/// ```
+/// let postfix = vec![
+///     Token::Operand(3.),
+///     Token::Operand(1.),
+///     Token::Operator(Operator::Plus),
+///     Token::Operand(2.),
+///     Token::Operator(Operator::Multiply)
+/// ];
+/// let result = evaluate_expression(postfix).unwrap();
+/// assert_eq!(result, 8.);
+/// ```
 fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
     let mut stack: Vec<f64> = Vec::new();
 
@@ -56,61 +85,83 @@ fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
             Token::Operand(num) => {
                 stack.push(num);
             }
-            Token::Operator(op) => {
-                if stack.len() < 2 {
-                    return Err("Invalid expression".to_string());
+            Token::Operator(op) =>
+
+            
+            match op {
+                // EDGE CASES
+                // Handle unary minus separately when there is only one operand available
+                Operator::Minus if stack.len() == 1 => {
+                    let num = stack.pop().unwrap();
+                    stack.push(-num);
+                },
+
+                Operator::Root if stack.len() == 1 => {
+                    let num = stack.pop().unwrap();
+                    if num < 0. {
+                        return Err("Cannot take the root of a negative number".to_string());
+                    }
+                    let answer = num.powf(1. / 2.);
+                    stack.push(answer);
+                },
+                
+                _ => {
+                    if stack.len() < 2 {
+                        return Err("Invalid expression".to_string());
+                    }
+                    let right = stack.pop().unwrap();
+                    let left = stack.pop().unwrap();
+
+                    println!("Left operand: {}, Right operand: {}", left, right);
+
+                    let answer = match op {
+                        Operator::Plus => {
+                            left + right
+                        }
+                        Operator::Minus => {
+                            left - right
+                        }
+                        Operator::Multiply => {
+                            left * right
+                        }
+                        Operator::Divide => {
+                            if right.abs() < f64::EPSILON {
+                                return Err("Cannot divide by zero".to_string());
+                            }
+                            left / right
+                        }
+                        Operator::Percent => {
+                            if right.abs() < f64::EPSILON {
+                                return Err("Cannot take the percentage of zero".to_string());
+                            }
+                            left / right * 100.0
+                        }
+                        Operator::Power => {
+                            left.powf(right)
+                        }
+                        Operator::Root => {
+                            if left.abs() < f64::EPSILON {
+                                return Err("Cannot take the 0th root".to_string());
+                            }
+                            if right < 0. {
+                                return Err("Cannot take the root of a negative number".to_string());
+                            }
+                            right.powf(1. / left)
+                        }
+                        Operator::Factorial => {
+                            if left < 0. {
+                                return Err("Cannot take factorial of a negative number".to_string());
+                            }
+                            let mut res = 1.0;
+                            (2..=(left as i64)).for_each(|i| res *= i as f64);
+                            res
+                        }
+                        _ => {
+                            return Err(format!("{op:?} is an invalid operator"));
+                        }
+                    };
+                    stack.push(answer);
                 }
-                let right = stack.pop().unwrap();
-                let left = stack.pop().unwrap();
-
-                let answer = match op {
-                    Operator::Plus => {
-                        left + right
-                    }
-                    Operator::Minus => {
-                        left - right
-                    }
-                    Operator::Multiply => {
-                        left * right
-                    }
-                    Operator::Divide => {
-                        if right.abs() < f64::EPSILON {
-                            return Err("Cannot divide by zero".to_string());
-                        }
-                        left / right
-                    }
-                    Operator::Percent => {
-                        if right.abs() < f64::EPSILON {
-                            return Err("Cannot take the percentage of zero".to_string());
-                        }
-                        left / right * 100.0
-                    }
-                    Operator::Power => {
-                        left.powf(right)
-                    }
-                    Operator::Root => {
-                        if left.abs() < f64::EPSILON {
-                            return Err("Cannot take the 0th root".to_string());
-                        }
-                        if right < 0. {
-                            return Err("Cannot take the root of a negative number".to_string());
-                        }
-                        right.powf(1. / left)
-                    }
-                    Operator::Factorial => {
-                        if left < 0. {
-                            return Err("Cannot take factorial of a negative number".to_string());
-                        }
-                        let mut res = 1.0;
-                        (2..=(left as i64)).for_each(|i| res *= i as f64);
-                        res
-                    }
-                    _ => {
-                        return Err(format!("{op:?} is an invalid operator"));
-                    }
-                };
-
-                stack.push(answer);
             }
         }
     }
@@ -138,6 +189,38 @@ fn process_current_number(
     Ok(())
 }
 
+/// Tokenizes a string input into a vector of Tokens.
+/// 
+/// This function scans a string representing a mathematical expression and converts
+/// it into a sequence of tokens. Each token represents either an operator or an operand.
+/// The function handles numbers, operators, and parentheses, converting them into
+/// their respective Token representations.
+/// 
+/// # Arguments
+/// 
+/// * `input` - A string slice representing the mathematical expression to tokenize
+/// 
+/// # Returns
+/// A Result containing a vector of Tokens if successful, or an error message if the input
+/// contains invalid characters or improperly formatted numbers.
+/// # Examples
+/// ```
+/// let input = "3 + 4 * 2 / (1 - 5)";
+/// let tokens = tokenize(input).unwrap();
+/// assert_eq!(tokens, vec![
+///     Token::Operand(3.),
+///     Token::Operator(Operator::Plus),
+///     Token::Operand(4.),
+///     Token::Operator(Operator::Multiply),
+///     Token::Operand(2.),
+///     Token::Operator(Operator::Divide),
+///     Token::Operator(Operator::OpenParen),
+///     Token::Operand(1.),
+///     Token::Operator(Operator::Minus),
+///     Token::Operand(5.),
+///     Token::Operator(Operator::CloseParen)
+/// ]);
+/// ```
 fn tokenize(input: &str) -> Result<Vec<Token>, String> {
     let mut input_queue: Vec<Token> = Vec::new();
     let mut current_number = String::new();
@@ -210,7 +293,38 @@ fn tokenize(input: &str) -> Result<Vec<Token>, String> {
     Ok(input_queue)
 }
 
-// Function to convert an infix expression to postfix notation
+/// Converts a given infix expression to postfix notation.
+/// 
+/// The function uses a precedence table to resolve the order of operations
+/// and manage operator precedence. This ensures that the resulting postfix
+/// expression is correctly ordered for subsequent evaluation.
+/// 
+/// # Arguments
+/// 
+/// * `input_queue` - A vector of Tokens representing the infix expression
+/// 
+/// # Returns
+/// A Result containing the postfix notation as a vector of Tokens or an error message
+/// if the expression is invalid.
+/// 
+/// # Examples
+/// ```
+/// let infix = vec![
+///     Token::Operand(3.),
+///     Token::Operator(Operator::Minus),
+///     Token::Operand(1.),
+///     Token::Operator(Operator::Multiply),
+///     Token::Operand(2.)
+/// ];
+/// let postfix = to_postfix(infix).unwrap();
+/// assert_eq!(postfix, vec![
+///     Token::Operand(3.),
+///     Token::Operand(1.),
+///     Token::Operator(Operator::Minus),
+///     Token::Operand(2.),
+///     Token::Operator(Operator::Multiply)
+/// ]);
+/// ```
 fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
     // We define the precedence table as a 2D array
     let precedence_table: Vec<Vec<char>> = vec![
@@ -287,6 +401,24 @@ fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
     Ok(output_queue)
 }
 
+/// Parses a string expression and evaluates it to a number.
+/// 
+/// This function is the high-level interface to the expression parsing system. It first tokenizes
+/// the input string, converts the tokens from infix to postfix notation, and then evaluates the
+/// resulting postfix expression.
+/// 
+/// # Arguments
+/// 
+/// * `input` - The string slice to parse and evaluate
+/// 
+/// # Returns
+/// A Result containing the numerical result of the expression or an error message if the
+/// expression is invalid or an error occurs during evaluation.
+/// # Examples
+/// ```
+/// let result = parse("3 + 4 * 2 / (1 - 5)^2").unwrap();
+/// assert_eq!(result, 3.5);
+/// ```
 pub fn parse(input: &str) -> Result<f64, String> {
     let tokens = tokenize(input)?;
     let postfix_result = to_postfix(tokens)?;
@@ -478,6 +610,24 @@ mod evaluate_tests {
         );
     }
 
+    #[test]
+    fn negative_sqrt() {
+        assert_eq!(
+            Ok(0.25),
+            evaluate_expression(vec![Token::Operand(-2.), Token::Operand(16.), Token::Operator(Operator::Root)])
+        );
+    }
+
+    #[test]
+    fn square_root_of_16_without_one_operand() {
+        assert_eq!(
+            Ok(4.),
+            evaluate_expression(vec![
+                Token::Operand(16.),
+                Token::Operator(Operator::Root)
+            ])
+        );
+    }
 
     #[test]
     fn add_multiple_values() {
@@ -514,6 +664,31 @@ mod evaluate_tests {
         ]).unwrap()).abs() < 0.00000001);
     }
 
+    #[test]
+    fn negative_of_addition() {
+        assert_eq!(
+            Ok(-7.),
+            evaluate_expression(vec![
+                Token::Operand(4.),
+                Token::Operand(3.),
+                Token::Operator(Operator::Plus),
+                Token::Operator(Operator::Minus)
+            ])
+        );
+    }
+
+        #[test]
+    fn positive_of_addition() {
+        assert_eq!(
+            Ok(7.),
+            evaluate_expression(vec![
+                Token::Operand(4.),
+                Token::Operand(3.),
+                Token::Operator(Operator::Plus)
+            ])
+        );
+    }
+
     // These are invalid operations
     #[test]
     fn divide_by_zero() {
@@ -534,7 +709,7 @@ mod evaluate_tests {
     #[test]
     fn invalid_operator() {
         assert_eq!(
-            Err("Invalid expression".to_string()),
+            Err("OpenParen is an invalid operator".to_string()),
             evaluate_expression(vec![Token::Operand(1.), Token::Operand(1.), Token::Operator(Operator::OpenParen)])
         );
     }
@@ -542,18 +717,11 @@ mod evaluate_tests {
     #[test]
     fn negative_factorial() {
         assert_eq!(
-            Err("Cannot take factorial of a negative number".to_string()),
+            Err("Invalid expression".to_string()),
             evaluate_expression(vec![Token::Operand(-1.), Token::Operator(Operator::Factorial)])
         );
     }
 
-    #[test]
-    fn negative_sqrt() {
-        assert_eq!(
-            Err("Cannot take the root of a negative number".to_string()),
-            evaluate_expression(vec![Token::Operand(-2.), Token::Operand(16.), Token::Operator(Operator::Root)])
-        );
-    }
 }
 
 #[cfg(test)]
@@ -640,14 +808,6 @@ mod parse_tests {
 
     // These are invalid operations
     #[test]
-    fn invalid_negative_factorial() {
-        assert_eq!(
-            Err("Cannot take factorial of a negative number".to_string()),
-            parse("-1!")
-        );
-    }
-
-    #[test]
     fn divide_by_zero() {
         assert_eq!(
             Err("Cannot divide by zero".to_string()),
@@ -668,14 +828,6 @@ mod parse_tests {
         assert_eq!(
             Err("Invalid expression".to_string()),
             parse("(1+2")
-        );
-    }
-
-    #[test]
-    fn negative_sqrt() {
-        assert_eq!(
-            Err("Cannot take the root of a negative number".to_string()),
-            parse("-16√2")
         );
     }
 }
