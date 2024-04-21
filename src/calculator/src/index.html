@@ -107,6 +107,21 @@
           case "^":
           display.value+="^";
           break;
+          case ".":
+          display.value+=",";
+          break;
+          case ",":
+          display.value+=",";
+          break;
+          case "(":
+          display.value+="(";
+          break;
+          case ")":
+          display.value+=")";
+          break;
+          case "%":
+          display.value+="%";
+          break;
           case "Backspace":
           display.value=display.value.slice(0,-1);
           break;
