@@ -10,6 +10,13 @@ use math_lib::parse;
 /// # Returns
 ///
 /// * A string that can be used by the parser.
+///
+/// # Examples
+/// ```
+/// let input = "1 2 3 4 5".to_string();
+/// let result = prepare_to_parse(input);
+/// assert_eq!(result, "2√(1/4*(1^2+2^2+3^2+4^2+5^2)-1/5*(1+2+3+4+5)^2))");
+/// ```
 pub fn prepare_to_parse(input: String) -> String {
     let numbers = input
         .split_whitespace()
