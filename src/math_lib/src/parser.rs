@@ -112,7 +112,7 @@ fn evaluate_expression(tokens: Vec<Token>) -> Result<f64, String> {
                     let right = stack.pop().unwrap();
                     let left = stack.pop().unwrap();
 
-                    println!("Left operand: {}, Right operand: {}", left, right);
+                    //println!("Left operand: {}, Right operand: {}", left, right);
 
                     let answer = match op {
                         Operator::Plus => {
@@ -385,7 +385,7 @@ fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
             }
             's' => {
                 // Special case where we matched $ with $ we end here!
-                println!("End of input and end of precedence stack");
+                // println!("End of input and end of precedence stack");
                 return Ok(output_queue);
             }
             'c' => {
