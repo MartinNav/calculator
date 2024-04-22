@@ -131,6 +131,9 @@
           case "Backspace":
           display.value=display.value.slice(0,-1);
           break;
+          case "Enter":
+            document.getElementById('equals').click();
+          break;
         }
       }
       adjustFontSize(display);
@@ -142,6 +145,7 @@
 
 document.getElementById('display').value = localStorage.getItem("prompt");
       adjustFontSize(display);
+      localStorage.setItem("prompt","");
     }
 </script>
 
