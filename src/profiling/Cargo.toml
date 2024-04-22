@@ -7,9 +7,3 @@ edition = "2021"
 math_lib = { path = "../math_lib" }
 rand = "0.9.0-alpha.1"
 regex = "1.10.4"
-
-[profile.release]
-debug = true
-
-[profile.bench]
-debug = true
