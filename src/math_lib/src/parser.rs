@@ -205,7 +205,7 @@ fn process_current_number(
 /// contains invalid characters or improperly formatted numbers.
 /// # Examples
 /// ```
-/// let input = "3 + 4 * 2 / (1 - 5)";
+/// let input = "3+4*2/(1-5)";
 /// let tokens = tokenize(input).unwrap();
 /// assert_eq!(tokens, vec![
 ///     Token::Operand(3.),
