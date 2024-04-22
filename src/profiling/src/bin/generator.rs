@@ -1,11 +1,12 @@
 use std::io::Write;
 use rand::Rng;
+use regex::Regex;
 
 /// Generates a test case file with random numbers for profiler
 ///
 /// # Arguments
 ///
-/// * `number_count` - The number of random numbers to generate
+/// * `file_name` - The file to write into (has to contain a number to specify a count to generate)
 /// * `min_value` - The minimum value of the random numbers
 /// * `max_value` - The maximum value of the random numbers
 ///
@@ -19,13 +20,24 @@ use rand::Rng;
 fn main() {
     let args = std::env::args().collect::<Vec<_>>();
     if args.len() != 4 {
-        eprintln!("Usage: {} <number_count> <min_value> <max_value>", args[0]);
+        eprintln!("Usage: {} <file_name> <min_value> <max_value>", args[0]);
         std::process::exit(1);
     }
 
-    let mut is_float = false;
-    let number_count = args[1].parse::<usize>().unwrap();
+    let file_name = &args[1];
 
+    let re = Regex::new(r"^.*?(\d+)[^\d/\\]*$").unwrap();
+    let captures = re.captures(file_name);
+    if captures.is_none() {
+        eprintln!("The file name has to contain a number to specify a count to generate.");
+        std::process::exit(1);
+    }
+    let captures = captures.unwrap();
+
+    let number_str = captures.get(1).unwrap().as_str();
+    let number_count = number_str.parse::<usize>().unwrap();
+
+    let mut is_float = false;
     let val = args[2].parse::<i64>();
     let min_value = match val {
         Ok(v) => v as f64,
@@ -46,7 +58,12 @@ fn main() {
 
     let mut rng = rand::thread_rng();
 
-    let mut file = std::fs::File::create(format!("test_case_{number_count}.txt")).unwrap();
+    // create directory
+    let path = std::path::Path::new(file_name);
+    let prefix = path.parent().unwrap();
+    std::fs::create_dir_all(prefix).unwrap();
+
+    let mut file = std::fs::File::create(file_name).unwrap();
     if is_float {
         for i in 0..number_count {
             let n = rng.gen_range(min_value..=max_value);
