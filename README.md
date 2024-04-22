@@ -1,9 +1,9 @@
-Prostredi
+Prostředí
 ---------
 
 Ubuntu 64bit
 
-Autori
+Autoři
 ------
 
 Hrdza
@@ -15,7 +15,7 @@ Hrdza
 Licence
 -------
 
-Tento program je poskytovan pod licencí GNU General Public License v3.0
+Tento program je poskytován pod licencí GNU General Public License v3.0
 
 Instalace
 ---------
@@ -23,7 +23,7 @@ Instalace
 `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
 - tauri
 `cargo install create-tauri-app --locked`
-`cargo install tauri-cli`
+`cargo install tauri-cli --locked`
 - knihovny
 ```bash
 sudo apt update
@@ -37,3 +37,5 @@ sudo apt install libwebkit2gtk-4.0-dev \
     libayatana-appindicator3-dev \
     librsvg2-dev
 ```
+- profiling
+`cargo install flamegraph --locked`
