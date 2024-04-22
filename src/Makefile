@@ -1,24 +1,33 @@
 test_min=0.
 test_max=1000000.
 
-.PHONY: build test dev release docs profiling
+.PHONY: all build test clean dev release docs profiling
 
-build:
-	cargo build
+all:
+pack:
+clean:
+	sudo rm -rf target
 test:
 	cargo test --package math_lib --lib parser
+doc:
+	cargo doc --package profiling
+	cargo doc --package math_lib --document-private-items --open
+run: dev
+profiling:
+	make flamegraph_{10,1000,1000000}.svg
+
+dependencies:
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	cargo install create-tauri-app --locked
+	cargo install tauri-cli --locked
+	cargo install flamegraph --locked
+build:
+	cargo build
 dev:
 	cargo tauri dev
 release:
 	cargo build --release
 	cargo tauri build
-docs:
-	cargo doc --package math_lib --document-private-items --open
-	cargo doc --package profiling
-clean:
-	sudo rm -rf target
-profiling:
-	make flamegraph_{10,1000,1000000}.svg
 test_case_%.txt:
 	cargo run --package profiling --bin generator target/profiling/$@ $(test_min) $(test_max)
 flamegraph_%.svg: test_case_%.txt 
