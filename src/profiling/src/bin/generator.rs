@@ -15,7 +15,7 @@ use regex::Regex;
 /// # Example
 ///
 /// ```shell
-/// cargo run --bin generator 1000000 0 100
+/// cargo run --bin generator test_case_1000000.txt 0 100
 /// ```
 fn main() {
     let args = std::env::args().collect::<Vec<_>>();
