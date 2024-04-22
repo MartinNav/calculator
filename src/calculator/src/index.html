@@ -136,12 +136,11 @@
       adjustFontSize(display);
     });
     function preserve(){
-      document.cookie=""+encodeURI(document.getElementById('display').value)+"";
+      localStorage.setItem("prompt",document.getElementById('display').value);
     }
     function on_load(){
 
-      var display = document.getElementById('display');
-      display.value = decodeURI(document.cookie);
+document.getElementById('display').value = localStorage.getItem("prompt");
       adjustFontSize(display);
     }
 </script>
