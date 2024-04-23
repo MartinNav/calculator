@@ -10,7 +10,7 @@
     </script>
 </head>
 <body onload="on_load()">
-    <a class="helpbtn" onclick="preserve()" href="/help.html">?</a>
+<a class="helpbtn" onclick="preserve()" href="/help.html">?</a>
 <div class="calculator">
     <input type="text" class="display" id="display" disabled>
     <div class="buttons">
@@ -68,8 +68,7 @@
     }
 
     function removeLast() {
-        if (displaying_error === true)
-        {
+        if (displaying_error === true) {
             clearDisplay();
         }
 
@@ -84,68 +83,78 @@
         let fontSize = Math.max(18, 28 - (displayLength - maxLength));
         display.style.fontSize = fontSize + 'px';
     }
-    document.addEventListener("keydown",(e)=>{
-      let key = e.key;
-      var display = document.getElementById('display');
 
-      let res = parseInt(key)
-      console.log(res);
-      if (!isNaN(res)){
-        display.value+=key;
-      }
-      else{
-        switch(key){
-          case "+":
-          display.value+="+";
-          break;
-          case "-":
-          display.value+="-";
-          break;
-          case "/":
-          display.value+="/";
-          break;
-          case "*":
-          display.value+="*";
-          break;
-          case "!":
-          display.value+="!";
-          break;
-          case "^":
-          display.value+="^";
-          break;
-          case ".":
-          display.value+=",";
-          break;
-          case ",":
-          display.value+=",";
-          break;
-          case "(":
-          display.value+="(";
-          break;
-          case ")":
-          display.value+=")";
-          break;
-          case "%":
-          display.value+="%";
-          break;
-          case "Backspace":
-          display.value=display.value.slice(0,-1);
-          break;
-          case "Enter":
-            document.getElementById('equals').click();
-          break;
+    document.addEventListener("keydown", (e) => {
+        let key = e.key;
+
+        let res = parseInt(key)
+        if (!isNaN(res)) {
+            appendToDisplay(key);
+        } else {
+            switch (key) {
+                case "+":
+                    appendToDisplay("+");
+                    break;
+                case "-":
+                    appendToDisplay("-");
+                    break;
+                case "/":
+                    appendToDisplay("/");
+                    break;
+                case "*":
+                    appendToDisplay("*");
+                    break;
+                case "!":
+                    appendToDisplay("!");
+                    break;
+                case "e":
+                case "^":
+                    appendToDisplay("^");
+                    break;
+                case ".":
+                    appendToDisplay(",");
+                    break;
+                case ",":
+                    appendToDisplay(",");
+                    break;
+                case "p":
+                    appendToDisplay("π");
+                    break;
+                case "r":
+                    appendToDisplay("√");
+                    break;
+                case "(":
+                    appendToDisplay("(");
+                    break;
+                case ")":
+                    appendToDisplay(")");
+                    break;
+                case "%":
+                    appendToDisplay("%");
+                    break;
+                case "Backspace":
+                    removeLast();
+                    break;
+                case "Escape":
+                    clearDisplay();
+                    break;
+                case "Equals":
+                case "Enter":
+                    document.getElementById('equals').click();
+                    break;
+            }
         }
-      }
-      adjustFontSize(display);
     });
-    function preserve(){
-      localStorage.setItem("prompt",document.getElementById('display').value);
-    }
-    function on_load(){
 
-document.getElementById('display').value = localStorage.getItem("prompt");
-      adjustFontSize(display);
-      localStorage.setItem("prompt","");
+    function preserve() {
+        localStorage.setItem("prompt", document.getElementById('display').value);
+    }
+
+    function on_load() {
+
+        document.getElementById('display').value = localStorage.getItem("prompt");
+        adjustFontSize(display);
+        localStorage.setItem("prompt", "");
     }
 </script>
 
