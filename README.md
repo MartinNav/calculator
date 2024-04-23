@@ -37,3 +37,6 @@ sudo apt install libwebkit2gtk-4.0-dev \
     libayatana-appindicator3-dev \
     librsvg2-dev
 ```
+Použité virtuální prostredi
+---------
+Ubuntu 22.04 – 64bit
