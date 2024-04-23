@@ -29,7 +29,7 @@ dev:
 release:
 	cargo build --release
 	cargo tauri build
-	cargo deb --package profiling --bin profiling
+	cargo deb --package profiling
 test_case_%.txt:
 	cargo run --package profiling --bin generator target/profiling/$@ $(test_min) $(test_max)
 flamegraph_%.svg: test_case_%.txt 
