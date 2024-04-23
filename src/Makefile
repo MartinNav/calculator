@@ -27,7 +27,9 @@ doc:
 	cargo doc --package math_lib --document-private-items --open
 run: dev
 profiling:
-	make flamegraph_{10,1000,1000000}.svg
+	make flamegraph_{10}.svg
+	make flamegraph_{1000}.svg
+	make flamegraph_{1000000}.svg
 
 dependencies:
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
