@@ -205,7 +205,7 @@ fn process_current_number(
 /// contains invalid characters or improperly formatted numbers.
 /// # Examples
 /// ```
-/// let input = "3 + 4 * 2 / (1 - 5)";
+/// let input = "3+4*2/(1-5)";
 /// let tokens = tokenize(input).unwrap();
 /// assert_eq!(tokens, vec![
 ///     Token::Operand(3.),
@@ -416,7 +416,7 @@ fn to_postfix(input_queue: Vec<Token>) -> Result<Vec<Token>, String> {
 /// expression is invalid or an error occurs during evaluation.
 /// # Examples
 /// ```
-/// let result = parse("3 + 4 * 2 / (1 - 5)^2").unwrap();
+/// let result = parse("3+4*2/(1-5)^2").unwrap();
 /// assert_eq!(result, 3.5);
 /// ```
 pub fn parse(input: &str) -> Result<f64, String> {

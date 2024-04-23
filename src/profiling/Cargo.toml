@@ -6,9 +6,17 @@ edition = "2021"
 [dependencies]
 math_lib = { path = "../math_lib" }
 rand = "0.9.0-alpha.1"
-
-[profile.release]
-debug = true
-
-[profile.bench]
-debug = true
+regex = "1.10.4"
+[package.metadata.deb]
+revision = ""
+maintainer = "Martin Navrátil, Richard Gajdošík, Matěj Černický, Karel Josef Čáp"
+copyright = "2024, Martin Navrátil, Richard Gajdošík, Matěj Černický, Karel Josef Čáp"
+license-file = ["../../LICENSE", "0"]
+extended-description = """\
+Profining package for math_lib"""
+depends = "$auto"
+section = "utility"
+priority = "optional"
+assets = [
+    ["target/release/profiling", "usr/bin/", "755"],
+]
