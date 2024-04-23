@@ -1,49 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <title></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head>
-  <style>
-   .btn{
-  color: white;
-    padding: 3px;
-    border-radius:4px;
-  background-color:#403D39;
-  } 
-   li{
-     text-decoration: none;
-     list-style-type:none;
-     margin:8px;
-   }
-  </style>
-  <body>
-    <h1>Nápověda</h1>
-  
-    <ul>
-      <li><b class="btn">C</b>  vymaže všechna zadaná čísla a operace a resetuje kalkulačku na výchozí stav</li>
-      <li><b class="btn">←</b>  vymaže posledni zadaný znak</li>
-      <li><b class="btn">%</b> vypočítá procenta podle následujcího vzorce: (a/b)*100</li>
-      <li><b class="btn">π</b> vloží do výpočtu konstantu π s přesností 35 desetiných míst</li>
-      <li><b class="btn">!</b> vypočítá faktorial hodnoty, která je vložená před !</li>
-      <li><b class="btn">x<sup>y</sup></b> vypočítá exponent následovně: hodnota^exponent</li>
-      <li><b class="btn">√<sub>n</sub></b> vypočítá <b>n</b>tou odmocninu hodnoty následovně: odmocnina√hodnota</li>
-      <li><b class="btn">+</b> sečte dvě čísla: a+b</li>
-      <li><b class="btn">-</b> odečte dvě čísla: a-b</li>
-      <li><b class="btn">*</b> vynásobí dvě čísla: a*b</li>
-      <li><b class="btn">/</b> vydělí dvě čísla (pozor na dělení nulou): a/b</li>
+</head>
+<style>
+    .btn {
+        color: white;
+        padding: 3px;
+        border-radius: 4px;
+        background-color: #403D39;
+    }
+
+    li {
+        text-decoration: none;
+        list-style-type: none;
+        margin: 8px;
+    }
+</style>
+<body>
+<h1>Nápověda</h1>
+
+<ul>
+    <li><b class="btn">C</b> vymaže všechna zadaná čísla a operace a resetuje kalkulačku na výchozí stav</li>
+    <li><b class="btn">←</b> vymaže posledni zadaný znak</li>
+    <li><b class="btn">%</b> vypočítá procenta podle následujcího vzorce: (a/b)*100</li>
+    <li><b class="btn">π</b> vloží do výpočtu konstantu π s přesností 35 desetiných míst</li>
+    <li><b class="btn">!</b> vypočítá faktorial hodnoty, která je vložená před !</li>
+    <li><b class="btn">x<sup>n</sup></b> vypočítá exponent následovně: hodnota<sup>exponent</sup></li>
+    <li><b class="btn"><sup>n</sup>√x</b> vypočítá <b>n</b>tou odmocninu hodnoty následovně: <sup>odmocnina</sup>√<span
+            style="text-decoration: overline;">hodnota</span></li>
+    <li><b class="btn">+</b> sečte dvě čísla: a+b</li>
+    <li><b class="btn">-</b> odečte dvě čísla: a-b</li>
+    <li><b class="btn">*</b> vynásobí dvě čísla: a*b</li>
+    <li><b class="btn">/</b> vydělí dvě čísla (pozor na dělení nulou): a/b</li>
     <li><b class="btn">(</b> otevírací závorka (ke každé otevírací závorce musí existovat zavírací závorka)</li>
     <li><b class="btn">)</b> zavírací závorka (ke každé zavírací závorce musí existovat otevírací závorka)</li>
-      <li><b class="btn">=</b> provede samotný výpočet a nahradí příklad výsledkem</li>
-    
-    </ul>
-    <a class="helpbtn"style="
+    <li><b class="btn">=</b> provede samotný výpočet a nahradí příklad výsledkem</li>
+
+</ul>
+<a class="helpbtn" style="
   text-decoration: none;
   color: white;
   background-color:#45a049;
   padding: 5px;
   border-radius: 8px;
       " href="/index.html"><< zpět</a>
-  </body>
+</body>
 </html>
