@@ -46,4 +46,4 @@ release:
 test_case_%.txt:
 	cargo run --package profiling --bin generator target/profiling/$@ $(test_min) $(test_max)
 flamegraph_%.svg: test_case_%.txt 
-	sudo cargo flamegraph --package profiling --bin profiling -o target/profiling/$@ < target/profiling/$<
+	cargo flamegraph --package profiling --bin profiling -o target/profiling/$@ < target/profiling/$<
