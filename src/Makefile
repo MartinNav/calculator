@@ -12,7 +12,10 @@ pack:
 	cp target/debian/*.deb target/archive/install/
 	cp target/release/bundle/deb/*.deb target/archive/install/
 	mkdir target/archive/repo
+	rm -rf target/debian target/debug target/doc target/release
 	cp -r ../../calculator/* target/archive/repo/
+	cd target; \
+	zip -r -D archive.zip archive/*
 clean:
 	sudo rm -rf target
 test:
