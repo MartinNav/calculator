@@ -4,6 +4,10 @@ test_max=1000000.
 .PHONY: all build test clean dev release docs profiling
 
 all:
+	make doc
+	make test
+	make profiling
+	make run
 pack:
 	make release
 	mkdir target/archive
