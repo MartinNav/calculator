@@ -5,6 +5,14 @@ test_max=1000000.
 
 all:
 pack:
+	make release
+	mkdir target/archive
+	mkdir target/archive/doc
+	mkdir target/archive/install
+	cp target/debian/*.deb target/archive/install/
+	cp target/release/bundle/deb/*.deb target/archive/install/
+	mkdir target/archive/repo
+	cp -r ../../calculator/* target/archive/repo/
 clean:
 	sudo rm -rf target
 test:
