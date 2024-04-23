@@ -8,6 +8,8 @@ pack:
 	make release
 	mkdir target/archive
 	mkdir target/archive/doc
+	make doc
+	cp -r target/doc/* target/archive/doc
 	mkdir target/archive/install
 	cp target/debian/*.deb target/archive/install/
 	cp target/release/bundle/deb/*.deb target/archive/install/
