@@ -13,7 +13,7 @@ pack:
 	cp target/release/bundle/deb/*.deb target/archive/install/
 	mkdir target/archive/repo
 	rm -rf target/debian target/debug target/doc target/release
-	cp -r ../../calculator/* target/archive/repo/
+	rsync -avm ../../calculator/ target/archive/repo/
 	cd target; \
 	zip -r -D archive.zip archive/*
 clean:
