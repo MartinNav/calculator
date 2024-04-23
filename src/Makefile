@@ -21,6 +21,7 @@ dependencies:
 	cargo install create-tauri-app --locked
 	cargo install tauri-cli --locked
 	cargo install flamegraph --locked
+	cargo install cargo-deb
 build:
 	cargo build
 dev:
@@ -28,6 +29,7 @@ dev:
 release:
 	cargo build --release
 	cargo tauri build
+	cargo deb --package profiling --bin profiling
 test_case_%.txt:
 	cargo run --package profiling --bin generator target/profiling/$@ $(test_min) $(test_max)
 flamegraph_%.svg: test_case_%.txt 
