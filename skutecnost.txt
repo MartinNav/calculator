@@ -1,1 +1,7 @@
-tento soubor bude obsahovat rozdil mezi planem projektu a skutecnosti
+Informace ohledně skutečnosti oproti plánu v týmu Hrdza na VUT FIT, předmět IVS, projekt 2.
+
+Oproti plánu se jediné a sice to podstatné na projektu změnily hlavně data, ve kterých se nám dařilo dokončovat části projektu.
+
+K příkladu, dokončení matematické knihovny a parseru bylo stanoveno na datum 2.4., ale ve skutečnosti to bylo až 21.4.
+
+Revize souborů hodnoceni.txt a skutecnost.txt a kompletní dokončení projektu je namísto 21.4. až 23.4.

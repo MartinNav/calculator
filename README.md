@@ -19,23 +19,26 @@ Tento program je poskytován pod licencí GNU General Public License v3.0
 
 Instalace
 ---------
-- rust
-`curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
-- tauri
-`cargo install create-tauri-app --locked`
-`cargo install tauri-cli --locked`
-- knihovny
 ```bash
+cd calculator-main/src
 sudo apt update
 sudo apt install libwebkit2gtk-4.0-dev \
     build-essential \
     curl \
+    cargo \
+    make \
     wget \
     file \
     libssl-dev \
     libgtk-3-dev \
     libayatana-appindicator3-dev \
     librsvg2-dev
+make dependencies
+make install
 ```
 - profiling
 `cargo install flamegraph --locked`
+
+Použité virtuální prostredi
+---------
+Ubuntu 22.04 – 64bit

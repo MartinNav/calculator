@@ -1,0 +1,4 @@
+xcapkar00 100 (Návrh a implementace UI, pomoc s dokumentací, koordinace návrhů mockups, koordinace práce)
+xcernim00 100 (Testování, dokumentace, profiling, vývoj matematické knihovny v Rustu, výpomoc v případě nestíhání termínů)
+xgajdo33  100 (Koordinace práce, vývoj matematické knihovny v Rustu, přidělování tasků lidem, parser vstupu)
+xnavram00 100 (Vývoj matematické knihovny v Rustu, technická podpora, propojení parseru a rust knihovny)
