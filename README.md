@@ -1,9 +1,9 @@
-Prostredi
+Prostředí
 ---------
 
 Ubuntu 64bit
 
-Autori
+Autoři
 ------
 
 Hrdza
@@ -15,7 +15,7 @@ Hrdza
 Licence
 -------
 
-Tento program je poskytovan pod licencí GNU General Public License v3.0
+Tento program je poskytován pod licencí GNU General Public License v3.0
 
 Instalace
 ---------
@@ -33,9 +33,9 @@ sudo apt install libwebkit2gtk-4.0-dev \
     libgtk-3-dev \
     libayatana-appindicator3-dev \
     librsvg2-dev
-make dependencies
-make install
 ```
 Použité virtuální prostredi
 ---------
 Ubuntu 22.04 – 64bit
+- profiling
+`cargo install flamegraph --locked`

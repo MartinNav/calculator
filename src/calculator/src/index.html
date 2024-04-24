@@ -9,13 +9,13 @@
 
     </script>
 </head>
-<body>
-    <a class="helpbtn" href="/help.html">?</a>
+<body onload="on_load()">
+<a class="helpbtn" onclick="preserve()" href="/help.html">?</a>
 <div class="calculator">
     <input type="text" class="display" id="display" disabled>
     <div class="buttons">
-        <button class="operator" onclick="appendToDisplay('^')">x<sup>y</sup></button>
-        <button class="operator" onclick="appendToDisplay('√')">√<sub>n</sub></button>
+        <button class="operator" onclick="appendToDisplay('^')">x<sup>n</sup></button>
+        <button class="operator" onclick="appendToDisplay('√')"><sup>n</sup>√x</button>
         <button class="operator" onclick="appendToDisplay('!')">!</button>
         <button class="special" onclick="clearDisplay()">C</button>
         <button class="special" onclick="removeLast()">←</button>
@@ -68,8 +68,7 @@
     }
 
     function removeLast() {
-        if (displaying_error === true)
-        {
+        if (displaying_error === true) {
             clearDisplay();
         }
 
@@ -83,6 +82,79 @@
         let displayLength = display.value.length;
         let fontSize = Math.max(18, 28 - (displayLength - maxLength));
         display.style.fontSize = fontSize + 'px';
+    }
+
+    document.addEventListener("keydown", (e) => {
+        let key = e.key;
+
+        let res = parseInt(key)
+        if (!isNaN(res)) {
+            appendToDisplay(key);
+        } else {
+            switch (key) {
+                case "+":
+                    appendToDisplay("+");
+                    break;
+                case "-":
+                    appendToDisplay("-");
+                    break;
+                case "/":
+                    appendToDisplay("/");
+                    break;
+                case "*":
+                    appendToDisplay("*");
+                    break;
+                case "!":
+                    appendToDisplay("!");
+                    break;
+                case "e":
+                case "^":
+                    appendToDisplay("^");
+                    break;
+                case ".":
+                    appendToDisplay(",");
+                    break;
+                case ",":
+                    appendToDisplay(",");
+                    break;
+                case "p":
+                    appendToDisplay("π");
+                    break;
+                case "r":
+                    appendToDisplay("√");
+                    break;
+                case "(":
+                    appendToDisplay("(");
+                    break;
+                case ")":
+                    appendToDisplay(")");
+                    break;
+                case "%":
+                    appendToDisplay("%");
+                    break;
+                case "Backspace":
+                    removeLast();
+                    break;
+                case "Escape":
+                    clearDisplay();
+                    break;
+                case "Equals":
+                case "Enter":
+                    document.getElementById('equals').click();
+                    break;
+            }
+        }
+    });
+
+    function preserve() {
+        localStorage.setItem("prompt", document.getElementById('display').value);
+    }
+
+    function on_load() {
+
+        document.getElementById('display').value = localStorage.getItem("prompt");
+        adjustFontSize(display);
+        localStorage.setItem("prompt", "");
     }
 </script>
 
