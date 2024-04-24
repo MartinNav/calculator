@@ -27,6 +27,7 @@ sudo apt install libwebkit2gtk-4.0-dev \
     curl \
     cargo \
     make \
+    pkg-config \
     wget \
     file \
     libssl-dev \
