@@ -23,6 +23,13 @@ pack:
 	rsync -avm ../../calculator/ target/archive/repo/
 	cd target/archive; \
 	zip -r -D ../xnavram00_xgajdo33_xcernim00_xcapkar00.zip doc/ install/ repo/
+install:
+	make release
+	sudo dpkg -i target/release/bundle/deb/calculator_1.0.0_amd64.deb
+	sudo dpkg -i target/debian/profiling_0.1.0_amd64.deb
+uninstall:
+	sudo dpkg -r calculator
+	sudo dpkg -r profiling
 clean:
 	rm -rf target
 test:
