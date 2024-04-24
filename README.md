@@ -33,9 +33,12 @@ sudo apt install libwebkit2gtk-4.0-dev \
     libgtk-3-dev \
     libayatana-appindicator3-dev \
     librsvg2-dev
+make dependencies
+make install
 ```
+- profiling
+`cargo install flamegraph --locked`
+
 Použité virtuální prostredi
 ---------
 Ubuntu 22.04 – 64bit
-- profiling
-`cargo install flamegraph --locked`
