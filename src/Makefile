@@ -6,7 +6,6 @@ test_max=1000000.
 all:
 	make doc
 	make test
-	make profiling
 	make run
 pack:
 	make clean
