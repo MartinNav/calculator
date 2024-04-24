@@ -9,6 +9,7 @@ all:
 	make profiling
 	make run
 pack:
+	make clean
 	make release
 	mkdir target/archive
 	mkdir target/archive/doc
@@ -20,10 +21,17 @@ pack:
 	mkdir target/archive/repo
 	rm -rf target/debian target/debug target/doc target/release
 	rsync -avm ../../calculator/ target/archive/repo/
-	cd target; \
-	zip -r -D archive.zip archive/*
+	cd target/archive; \
+	zip -r -D ../xnavram00_xgajdo33_xcernim00_xcapkar00.zip doc/ install/ repo/
+install:
+	make release
+	sudo dpkg -i target/release/bundle/deb/calculator_1.0.0_amd64.deb
+	sudo dpkg -i target/debian/profiling_0.1.0_amd64.deb
+uninstall:
+	sudo dpkg -r calculator
+	sudo dpkg -r profiling
 clean:
-	sudo rm -rf target
+	rm -rf target
 test:
 	cargo test --package math_lib --lib parser
 doc:
